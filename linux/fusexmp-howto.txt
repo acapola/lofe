@@ -1,0 +1,25 @@
+fusexmp notes
+
+small howto on fusexmp as it is provided on fuse website.
+
+build on debian64:
+gcc -Wall fusexmp.c -lfuse -o fusexmp -D_FILE_OFFSET_BITS=64
+
+help:
+./fusexmp -h
+
+simple use:
+1. create mount point:
+mkdir ~/tmp/myfs
+2. invoke fusexmp
+./fusexmp ~/tmp/myfs
+This mirror the whole file system inside ~tmp/myfs
+The program exit immediatly, a deamon is run in background until the myfs is unmounted
+3. unmount
+sudo umount ~/tmp/myfs
+
+use with auto unmount:
+./fusexmp ~/tmp/myfs -o auto_unmount -f
+This time the program keep running until it gets killed (CTRL+C)
+When the program exit, myfs is unmounted automatically, but that may take few seconds to take effect.
+
