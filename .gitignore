@@ -73,3 +73,12 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+linux/codelite/.codelite/compilation.db
+linux/codelite/.codelite/valgrind.memcheck.supp
+linux/codelite/.codelite/refactoring.db
+linux/codelite/lofe.mk
+linux/codelite/Debug/lofe
+linux/codelite/.codelite/lofe.tags
+linux/codelite/Debug/linux_lofe.c.o.d
+linux/codelite/Debug/.d
+linux/codelite/lofe.txt
