@@ -26,23 +26,31 @@ See the file COPYING.
 #include <sys/xattr.h>
 #endif
 #include <stdlib.h>
+#include <stdint.h>
+
+
+typedef struct lofe_header_struct_t {
+	uint64_t info;
+	uint64_t content_len;
+	uint64_t iv[2];
+} lofe_header_t;
 
 static char *base_path;
 static unsigned int base_path_len;
 
 
-static void translate_path(const char *path_from_sys, char *actual_path_ptr){
-		printf("path_from_sys=%s\n",path_from_sys);   
 
+static void translate_path(const char *path_from_sys, char *actual_path_ptr){
+	//printf("path_from_sys=%s\n",path_from_sys);
 	strcpy(actual_path_ptr,base_path);
     strcpy(actual_path_ptr+base_path_len,path_from_sys);
-		printf("actual_path_ptr=%s\n",actual_path_ptr);   
-
+	printf("actual_path_ptr=%s\n",actual_path_ptr);
 }
 
 
 static int xmp_getattr(const char *path, struct stat *stbuf){
-    int res;
+    printf("xmp_getattr\n");
+	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){
@@ -55,9 +63,11 @@ static int xmp_getattr(const char *path, struct stat *stbuf){
     res = lstat(path, stbuf);
     if (res == -1)
         return -errno;
+	stbuf->st_size-=sizeof(lofe_header_t);//return the size of the file without the size of the header
     return 0;
 }
 static int xmp_access(const char *path, int mask){
+	printf("xmp_access\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -74,6 +84,7 @@ static int xmp_access(const char *path, int mask){
 	return 0;
 }
 static int xmp_readlink(const char *path, char *buf, size_t size){
+	printf("xmp_readlink\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -96,6 +107,7 @@ static int xmp_readdir(
 			fuse_fill_dir_t filler,
 			off_t offset, 
 			struct fuse_file_info *fi){
+	printf("xmp_readdir\n");
 	DIR *dp;
 	struct dirent *de;
 	(void) offset;
@@ -123,8 +135,27 @@ static int xmp_readdir(
 	closedir(dp);
 	return 0;
 }
+
+static int write_header(int fd, uint64_t len){
+	lofe_header_t header;
+	header.info=0;
+	header.iv[0] = 0x0123456789ABCDEF;
+	header.iv[1] = 0x1122334455667788;
+	header.content_len=len;
+	int res = pwrite(fd, &header, sizeof(header), 0);
+	if (res == -1){
+		printf("write_header failure: %d\n",errno);
+		res = -errno;
+	}
+	return 0;
+}
+
+
+//create a file
 static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
+	printf("xmp_mknod\n");
 	int res;
+	int fd;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){
@@ -137,9 +168,14 @@ static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
     /* On Linux this could just be 'mknod(path, mode, rdev)' but this
 	is more portable */
 	if (S_ISREG(mode)) {
-		res = open(path, O_CREAT | O_EXCL | O_WRONLY, mode);
-		if (res >= 0)
-			res = close(res);
+		fd = open(path, O_CREAT | O_EXCL | O_WRONLY, mode);
+		if (fd >= 0){
+			int res2=write_header(fd,0);
+			if(res2) res2 = -errno;
+			res = close(fd);
+			if(res2) return res2;
+			if(res) return -errno;
+		}
 	} else if (S_ISFIFO(mode))
 		res = mkfifo(path, mode);
 	else
@@ -149,6 +185,7 @@ static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
 	return 0;
 }
 static int xmp_mkdir(const char *path, mode_t mode){
+	printf("xmp_mkdir\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -165,6 +202,7 @@ static int xmp_mkdir(const char *path, mode_t mode){
 	return 0;
 }
 static int xmp_unlink(const char *path){
+	printf("xmp_unlink\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -181,6 +219,7 @@ static int xmp_unlink(const char *path){
 	return 0;
 }
 static int xmp_rmdir(const char *path){
+	printf("xmp_rmdir\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -197,6 +236,7 @@ static int xmp_rmdir(const char *path){
 	return 0;
 }
 static int xmp_symlink(const char *from, const char *to){
+	printf("xmp_symlink\n");
 	int res;
 		char actual_from_ptr[1024];
 	unsigned int len_from = strlen(from)+base_path_len+1;//+1 for final null char
@@ -222,6 +262,7 @@ static int xmp_symlink(const char *from, const char *to){
 	return 0;
 }
 static int xmp_rename(const char *from, const char *to){
+	printf("xmp_rename\n");
 	int res;
 		char actual_from_ptr[1024];
 	unsigned int len_from = strlen(from)+base_path_len+1;//+1 for final null char
@@ -247,6 +288,7 @@ static int xmp_rename(const char *from, const char *to){
 	return 0;
 }
 static int xmp_link(const char *from, const char *to){
+	printf("xmp_link\n");
 	int res;
 		char actual_from_ptr[1024];
 	unsigned int len_from = strlen(from)+base_path_len+1;//+1 for final null char
@@ -272,6 +314,7 @@ static int xmp_link(const char *from, const char *to){
 	return 0;
 }
 static int xmp_chmod(const char *path, mode_t mode){
+	printf("xmp_chmod\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -288,6 +331,7 @@ static int xmp_chmod(const char *path, mode_t mode){
 	return 0;
 }
 static int xmp_chown(const char *path, uid_t uid, gid_t gid){
+	printf("xmp_chown\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -303,7 +347,9 @@ static int xmp_chown(const char *path, uid_t uid, gid_t gid){
 		return -errno;
 	return 0;
 }
+
 static int xmp_truncate(const char *path, off_t size){
+	printf("xmp_truncate\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -314,6 +360,7 @@ static int xmp_truncate(const char *path, off_t size){
 	translate_path(path,actual_path_ptr);
     path = actual_path_ptr;
 
+	size+=sizeof(lofe_header_t);//keep the header, truncate only the content to the requested size.
     res = truncate(path, size);
 	if (res == -1)
 		return -errno;
@@ -321,6 +368,7 @@ static int xmp_truncate(const char *path, off_t size){
 }
 #ifdef HAVE_UTIMENSAT
 static int xmp_utimens(const char *path, const struct timespec ts[2]){
+	printf("xmp_utimens\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -339,7 +387,8 @@ static int xmp_utimens(const char *path, const struct timespec ts[2]){
 }
 #endif
 static int xmp_open(const char *path, struct fuse_file_info *fi){
-	int res;
+	int fd;
+	int res=0;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){
@@ -349,11 +398,34 @@ static int xmp_open(const char *path, struct fuse_file_info *fi){
 	translate_path(path,actual_path_ptr);
     path = actual_path_ptr;
 
-    res = open(path, fi->flags);
-	if (res == -1)
+	printf("openning %s\n",path);
+	/*//determine if the file already exist
+	int dont_exist = access (path, F_OK);
+	if(dont_exist) printf("file does not exist\n");
+	else printf("file exist\n");*/
+    //open the file in the underlying filesystem
+	fd = open(path, fi->flags);
+	if (fd == -1)
 		return -errno;
-	close(res);
-	return 0;
+	/*//if we created the file, write the header
+	if(dont_exist || (fi->flags & O_CREAT)){
+		printf("O_CREATE flag: creating header...");
+		lofe_header_t header;
+		header.info=0;
+		header.iv[0] = 0x0123456789ABCDEF;
+		header.iv[1] = 0x1122334455667788;
+		header.content_len=0;
+		res = pwrite(fd, &header, sizeof(header), 0);
+		if (res == -1){
+			printf("failure: %d\n",errno);
+			res = -errno;
+		}
+		printf("success\n");
+	} else {
+		printf("header expected to be present already\n");
+	}*/
+	close(fd);
+	return res;
 }
 static int xmp_read(
 			const char *path, 
@@ -361,6 +433,7 @@ static int xmp_read(
 			size_t size, 
 			off_t offset,
 			struct fuse_file_info *fi){
+	printf("xmp_read\n");
 	int fd;
 	int res;
 	(void) fi;
@@ -375,10 +448,10 @@ static int xmp_read(
 
     fd = open(path, O_RDONLY);
 	if (fd == -1)
-	return -errno;
-	res = pread(fd, buf, size, offset);
+		return -errno;
+	res = pread(fd, buf, size, offset+sizeof(lofe_header_t));
 	if (res == -1)
-	res = -errno;
+		res = -errno;
 	close(fd);
 	return res;
 }
@@ -389,6 +462,7 @@ static int xmp_write(
 			size_t size,
 			off_t offset, 
 			struct fuse_file_info *fi){
+	printf("xmp_write\n");
 	int fd;
 	int res;
 	(void) fi;
@@ -404,7 +478,7 @@ static int xmp_write(
     fd = open(path, O_WRONLY);
 	if (fd == -1)
 		return -errno;
-	res = pwrite(fd, buf, size, offset);
+	res = pwrite(fd, buf, size, offset+sizeof(lofe_header_t));
 	if (res == -1)
 		res = -errno;
 	close(fd);
@@ -412,6 +486,7 @@ static int xmp_write(
 }
 
 static int xmp_statfs(const char *path, struct statvfs *stbuf){
+	printf("xmp_statfs\n");
 	int res;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
@@ -455,6 +530,7 @@ static int xmp_fallocate(
 			off_t offset, 
 			off_t length, 
 			struct fuse_file_info *fi){
+	printf("xmp_fallocate\n");
 	int fd;
 	int res;
 	(void) fi;
@@ -486,6 +562,7 @@ static int xmp_setxattr(
 			const char *value,
 			size_t size, 
 			int flags){
+	printf("xmp_setxattr\n");
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){
@@ -506,6 +583,7 @@ static int xmp_getxattr(
 			const char *name, 
 			char *value,
 			size_t size){
+	printf("xmp_getxattr\n");
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){
@@ -525,6 +603,7 @@ static int xmp_listxattr(
 			const char *path, 
 			char *list, 
 			size_t size){
+	printf("xmp_listxattr\n");
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){
@@ -543,6 +622,7 @@ static int xmp_listxattr(
 static int xmp_removexattr(
 			const char *path, 
 			const char *name){
+	printf("xmp_removexattr\n");
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){

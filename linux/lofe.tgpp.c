@@ -26,27 +26,43 @@ See the file COPYING.
 #include <sys/xattr.h>
 #endif
 #include <stdlib.h>
+#include <stdint.h>
+
+
+typedef struct lofe_header_struct_t {
+	uint64_t info;
+	uint64_t content_len;
+	uint64_t iv[2];
+} lofe_header_t;
 
 static char *base_path;
 static unsigned int base_path_len;
 
 ``
-proc displayStrVar { name } {``
-	printf("`$name`=%s\n",`$name`);   
-``
+proc displayStrVar { name } {
+	#return ""
+	``printf("`$name`=%s\n",`$name`);``
+	return [tgpp::getProcOutput]
+}
+proc log { printfArgs } {
+	``printf(`$printfArgs`);printf("\n");``
+	return [tgpp::getProcOutput]
+}
+proc logStr { str } {
+	``printf("`$str`\n");``
 	return [tgpp::getProcOutput]
 }
 ``
 
 static void translate_path(const char *path_from_sys, char *actual_path_ptr){
-	`displayStrVar path_from_sys`
+	//`displayStrVar path_from_sys`
 	strcpy(actual_path_ptr,base_path);
     strcpy(actual_path_ptr+base_path_len,path_from_sys);
 	`displayStrVar "actual_path_ptr"`
 }
 
 ``
-proc fixPath { {name path}} {``
+proc fixPath { {name path} } {``
 	char actual_`$name`_ptr[1024];
 	unsigned int len_`$name` = strlen(`$name`)+base_path_len+1;//+1 for final null char
 	if(len_`$name`>sizeof(actual_`$name`_ptr)){
@@ -59,14 +75,17 @@ proc fixPath { {name path}} {``
 }``
 
 static int xmp_getattr(const char *path, struct stat *stbuf){
-    int res;
+    `logStr xmp_getattr`
+	int res;
 	`fixPath`
     res = lstat(path, stbuf);
     if (res == -1)
         return -errno;
+	stbuf->st_size-=sizeof(lofe_header_t);//return the size of the file without the size of the header
     return 0;
 }
 static int xmp_access(const char *path, int mask){
+	`logStr xmp_access`
 	int res;
 	`fixPath`
     res = access(path, mask);
@@ -75,6 +94,7 @@ static int xmp_access(const char *path, int mask){
 	return 0;
 }
 static int xmp_readlink(const char *path, char *buf, size_t size){
+	`logStr xmp_readlink`
 	int res;
 	`fixPath`
     res = readlink(path, buf, size - 1);
@@ -89,6 +109,7 @@ static int xmp_readdir(
 			fuse_fill_dir_t filler,
 			off_t offset, 
 			struct fuse_file_info *fi){
+	`logStr xmp_readdir`
 	DIR *dp;
 	struct dirent *de;
 	(void) offset;
@@ -108,15 +129,39 @@ static int xmp_readdir(
 	closedir(dp);
 	return 0;
 }
+
+static int write_header(int fd, uint64_t len){
+	lofe_header_t header;
+	header.info=0;
+	header.iv[0] = 0x0123456789ABCDEF;
+	header.iv[1] = 0x1122334455667788;
+	header.content_len=len;
+	int res = pwrite(fd, &header, sizeof(header), 0);
+	if (res == -1){
+		printf("write_header failure: %d\n",errno);
+		res = -errno;
+	}
+	return 0;
+}
+
+
+//create a file
 static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
+	`logStr xmp_mknod`
 	int res;
+	int fd;
 	`fixPath`
     /* On Linux this could just be 'mknod(path, mode, rdev)' but this
 	is more portable */
 	if (S_ISREG(mode)) {
-		res = open(path, O_CREAT | O_EXCL | O_WRONLY, mode);
-		if (res >= 0)
-			res = close(res);
+		fd = open(path, O_CREAT | O_EXCL | O_WRONLY, mode);
+		if (fd >= 0){
+			int res2=write_header(fd,0);
+			if(res2) res2 = -errno;
+			res = close(fd);
+			if(res2) return res2;
+			if(res) return -errno;
+		}
 	} else if (S_ISFIFO(mode))
 		res = mkfifo(path, mode);
 	else
@@ -126,6 +171,7 @@ static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
 	return 0;
 }
 static int xmp_mkdir(const char *path, mode_t mode){
+	`logStr xmp_mkdir`
 	int res;
 	`fixPath`
     res = mkdir(path, mode);
@@ -134,6 +180,7 @@ static int xmp_mkdir(const char *path, mode_t mode){
 	return 0;
 }
 static int xmp_unlink(const char *path){
+	`logStr xmp_unlink`
 	int res;
 	`fixPath`
     res = unlink(path);
@@ -142,6 +189,7 @@ static int xmp_unlink(const char *path){
 	return 0;
 }
 static int xmp_rmdir(const char *path){
+	`logStr xmp_rmdir`
 	int res;
 	`fixPath`
     res = rmdir(path);
@@ -150,6 +198,7 @@ static int xmp_rmdir(const char *path){
 	return 0;
 }
 static int xmp_symlink(const char *from, const char *to){
+	`logStr xmp_symlink`
 	int res;
 	`fixPath from`
     `fixPath to`
@@ -159,6 +208,7 @@ static int xmp_symlink(const char *from, const char *to){
 	return 0;
 }
 static int xmp_rename(const char *from, const char *to){
+	`logStr xmp_rename`
 	int res;
 	`fixPath from`
     `fixPath to`
@@ -168,6 +218,7 @@ static int xmp_rename(const char *from, const char *to){
 	return 0;
 }
 static int xmp_link(const char *from, const char *to){
+	`logStr xmp_link`
 	int res;
 	`fixPath from`
     `fixPath to`
@@ -177,6 +228,7 @@ static int xmp_link(const char *from, const char *to){
 	return 0;
 }
 static int xmp_chmod(const char *path, mode_t mode){
+	`logStr xmp_chmod`
 	int res;
 	`fixPath`
     res = chmod(path, mode);
@@ -185,6 +237,7 @@ static int xmp_chmod(const char *path, mode_t mode){
 	return 0;
 }
 static int xmp_chown(const char *path, uid_t uid, gid_t gid){
+	`logStr xmp_chown`
 	int res;
 	`fixPath`
     res = lchown(path, uid, gid);
@@ -192,9 +245,12 @@ static int xmp_chown(const char *path, uid_t uid, gid_t gid){
 		return -errno;
 	return 0;
 }
+
 static int xmp_truncate(const char *path, off_t size){
+	`logStr xmp_truncate`
 	int res;
 	`fixPath`
+	size+=sizeof(lofe_header_t);//keep the header, truncate only the content to the requested size.
     res = truncate(path, size);
 	if (res == -1)
 		return -errno;
@@ -202,6 +258,7 @@ static int xmp_truncate(const char *path, off_t size){
 }
 #ifdef HAVE_UTIMENSAT
 static int xmp_utimens(const char *path, const struct timespec ts[2]){
+	`logStr xmp_utimens`
 	int res;
 	`fixPath`
     /* don't use utime/utimes since they follow symlinks */
@@ -212,13 +269,37 @@ static int xmp_utimens(const char *path, const struct timespec ts[2]){
 }
 #endif
 static int xmp_open(const char *path, struct fuse_file_info *fi){
-	int res;
+	int fd;
+	int res=0;
 	`fixPath`
-    res = open(path, fi->flags);
-	if (res == -1)
+	printf("openning %s\n",path);
+	/*//determine if the file already exist
+	int dont_exist = access (path, F_OK);
+	if(dont_exist) printf("file does not exist\n");
+	else printf("file exist\n");*/
+    //open the file in the underlying filesystem
+	fd = open(path, fi->flags);
+	if (fd == -1)
 		return -errno;
-	close(res);
-	return 0;
+	/*//if we created the file, write the header
+	if(dont_exist || (fi->flags & O_CREAT)){
+		printf("O_CREATE flag: creating header...");
+		lofe_header_t header;
+		header.info=0;
+		header.iv[0] = 0x0123456789ABCDEF;
+		header.iv[1] = 0x1122334455667788;
+		header.content_len=0;
+		res = pwrite(fd, &header, sizeof(header), 0);
+		if (res == -1){
+			printf("failure: %d\n",errno);
+			res = -errno;
+		}
+		printf("success\n");
+	} else {
+		printf("header expected to be present already\n");
+	}*/
+	close(fd);
+	return res;
 }
 static int xmp_read(
 			const char *path, 
@@ -226,16 +307,17 @@ static int xmp_read(
 			size_t size, 
 			off_t offset,
 			struct fuse_file_info *fi){
+	`logStr xmp_read`
 	int fd;
 	int res;
 	(void) fi;
 	`fixPath`
     fd = open(path, O_RDONLY);
 	if (fd == -1)
-	return -errno;
-	res = pread(fd, buf, size, offset);
+		return -errno;
+	res = pread(fd, buf, size, offset+sizeof(lofe_header_t));
 	if (res == -1)
-	res = -errno;
+		res = -errno;
 	close(fd);
 	return res;
 }
@@ -246,6 +328,7 @@ static int xmp_write(
 			size_t size,
 			off_t offset, 
 			struct fuse_file_info *fi){
+	`logStr xmp_write`
 	int fd;
 	int res;
 	(void) fi;
@@ -253,7 +336,7 @@ static int xmp_write(
     fd = open(path, O_WRONLY);
 	if (fd == -1)
 		return -errno;
-	res = pwrite(fd, buf, size, offset);
+	res = pwrite(fd, buf, size, offset+sizeof(lofe_header_t));
 	if (res == -1)
 		res = -errno;
 	close(fd);
@@ -261,6 +344,7 @@ static int xmp_write(
 }
 
 static int xmp_statfs(const char *path, struct statvfs *stbuf){
+	`logStr xmp_statfs`
 	int res;
 	`fixPath`
     res = statvfs(path, stbuf);
@@ -296,6 +380,7 @@ static int xmp_fallocate(
 			off_t offset, 
 			off_t length, 
 			struct fuse_file_info *fi){
+	`logStr xmp_fallocate`
 	int fd;
 	int res;
 	(void) fi;
@@ -319,6 +404,7 @@ static int xmp_setxattr(
 			const char *value,
 			size_t size, 
 			int flags){
+	`logStr xmp_setxattr`
 	`fixPath`
     int res = lsetxattr(path, name, value, size, flags);
 	if (res == -1)
@@ -331,6 +417,7 @@ static int xmp_getxattr(
 			const char *name, 
 			char *value,
 			size_t size){
+	`logStr xmp_getxattr`
 	`fixPath`
 	int res = lgetxattr(path, name, value, size);
 	if (res == -1)
@@ -342,6 +429,7 @@ static int xmp_listxattr(
 			const char *path, 
 			char *list, 
 			size_t size){
+	`logStr xmp_listxattr`
 	`fixPath`
     int res = llistxattr(path, list, size);
 	if (res == -1)
@@ -352,6 +440,7 @@ static int xmp_listxattr(
 static int xmp_removexattr(
 			const char *path, 
 			const char *name){
+	`logStr xmp_removexattr`
 	`fixPath`
     int res = lremovexattr(path, name);
 	if (res == -1)
