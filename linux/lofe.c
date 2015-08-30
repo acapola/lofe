@@ -153,6 +153,39 @@ static int update_header_len2(const char *native_path, uint64_t len){
 	return 0;
 }
 
+static int lofe_read_block(int fd, uint8_t*buf, off_t offset, const lofe_header_t * const header){
+	if(offset%BLOCK_SIZE) {
+		printf("ERROR: lofe_read_block, unaligned offset: %X\n",offset);
+		return -1;
+	}
+	int res = pread(fd, buf, BLOCK_SIZE, offset);
+	if (res == -1){
+		return -1;
+	}
+	if(res!=BLOCK_SIZE){
+		printf("ERROR: lofe_read_block, could not read all the requested bytes\n");
+		return -1;
+	}
+	return 0;
+}
+
+static int lofe_write_block(int fd, const uint8_t * const buf, off_t offset, const lofe_header_t * const header){
+	if(offset%BLOCK_SIZE) {
+		printf("ERROR: lofe_write_block, unaligned offset: %X\n",offset);
+		return -1;
+	}
+	int res = pwrite(fd, buf, BLOCK_SIZE, offset);
+	if (res == -1){
+		return -1;
+	}
+	if(res!=BLOCK_SIZE){
+		printf("ERROR: lofe_write_block, could not write all the requested bytes\n");
+		return -1;
+	}
+	return 0;
+}
+
+
 static int xmp_getattr(const char *path, struct stat *stbuf){
     printf("xmp_getattr\n");
 	int res;
@@ -569,17 +602,13 @@ static int xmp_read(
 		uint8_t aligned_buf[BLOCK_SIZE];
 	
 		//read unaligned data
-		res = pread(fd, aligned_buf, BLOCK_SIZE, read_offset);
+		//res = pread(fd, aligned_buf, BLOCK_SIZE, read_offset);
+		res=lofe_read_block(fd, aligned_buf, read_offset, &header);
 		if (res == -1){
-			close(fd);
-			return -errno;
-		}
-		if(res!=BLOCK_SIZE){
-			printf("ERROR: read, could not read all the requested bytes to %s\n", path);
 			close(fd);
 			return -1;
 		}
-		
+			
 		//copy to output buffer
 		memcpy(buf,aligned_buf+unaligned_offset,unaligned_size);
 		read_offset+=BLOCK_SIZE;
@@ -588,16 +617,12 @@ static int xmp_read(
 	
 	//process regular blocks
 	for(block=0;block<regular_blocks;block++){
-		res = pread(fd, buf, BLOCK_SIZE, read_offset);
+		//res = pread(fd, buf, BLOCK_SIZE, read_offset);
+		res=lofe_read_block(fd, buf, read_offset, &header);
 		if (res == -1){
 			close(fd);
 			return -errno;
 		}	
-		if(res!=BLOCK_SIZE){
-			printf("ERROR: read, could not read all the requested bytes to %s\n", path);
-			close(fd);
-			return -1;
-		}
 		read_offset+=BLOCK_SIZE;
 		buf+=BLOCK_SIZE;
 	}
@@ -607,15 +632,11 @@ static int xmp_read(
 		uint8_t aligned_buf[BLOCK_SIZE];
 		
 		//read end of the block from file
-		res = pread(fd, aligned_buf, BLOCK_SIZE, read_offset);
+		//res = pread(fd, aligned_buf, BLOCK_SIZE, read_offset);
+		res=lofe_read_block(fd, aligned_buf, read_offset, &header);
 		if (res == -1){
 			close(fd);
 			return -errno;
-		}
-		if(res!=BLOCK_SIZE){
-			printf("ERROR: read, could not read all the requested bytes to %s\n", path);
-			close(fd);
-			return -1;
 		}
 		
 		//copy to output buffer
@@ -701,32 +722,24 @@ static int xmp_write(
 		//copy the unaligned data to aligned_buf to form a full block
 		memcpy(aligned_buf+unaligned_offset,buf,unaligned_size);
 		//write the aligned block to file
-		res = pwrite(fd, aligned_buf, BLOCK_SIZE, write_offset);
+		//res = pwrite(fd, aligned_buf, BLOCK_SIZE, write_offset);
+		res = lofe_write_block(fd, aligned_buf, write_offset, &header);
 		if (res == -1){
 			close(fd);
 			return -errno;
 		}	
-		if(res!=BLOCK_SIZE){
-			printf("ERROR: write, could not write all the requested bytes to %s\n", path);
-			close(fd);
-			return -1;
-		}
 		write_offset+=BLOCK_SIZE;
 		buf+=unaligned_size;
 	} 
 	
 	//process regular blocks
 	for(block=0;block<regular_blocks;block++){
-		res = pwrite(fd, buf, BLOCK_SIZE, write_offset);
+		//res = pwrite(fd, buf, BLOCK_SIZE, write_offset);
+		res = lofe_write_block(fd, buf, write_offset, &header);
 		if (res == -1){
 			close(fd);
 			return -errno;
 		}	
-		if(res!=BLOCK_SIZE){
-			printf("ERROR: write, could not write all the requested bytes to %s\n", path);
-			close(fd);
-			return -1;
-		}
 		write_offset+=BLOCK_SIZE;
 		buf+=BLOCK_SIZE;
 	}
@@ -745,15 +758,11 @@ static int xmp_write(
 		//copy the unaligned data to aligned_buf to form a full block
 		memcpy(aligned_buf,buf,last_block_unaligned_size);
 		//write the aligned block to file
-		res = pwrite(fd, aligned_buf, BLOCK_SIZE, write_offset);
+		//res = pwrite(fd, aligned_buf, BLOCK_SIZE, write_offset);
+		res = lofe_write_block(fd, aligned_buf, write_offset, &header);
 		if (res == -1){
 			close(fd);
 			return -errno;
-		}	
-		if(res!=BLOCK_SIZE){
-			printf("ERROR: write, could not write all the requested bytes to %s\n", path);
-			close(fd);
-			return -1;
 		}
 	}
 	
