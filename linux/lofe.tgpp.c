@@ -35,6 +35,47 @@ typedef struct lofe_header_struct_t {
 	uint64_t iv[2];
 } lofe_header_t;
 
+uint64_t key[2];
+#define BLOCK_SIZE 16
+	
+static off_t align_start(off_t offset){
+    off_t aligned_offset;
+    size_t align_offset_mask = BLOCK_SIZE-1;
+    align_offset_mask = ~align_offset_mask;
+    aligned_offset = offset & align_offset_mask;
+    return aligned_offset;
+}
+static off_t align_end(off_t offset){
+    off_t aligned_offset;
+    size_t align_offset_mask = BLOCK_SIZE-1;
+	aligned_offset=offset;
+    if(aligned_offset & align_offset_mask){
+		aligned_offset &= ~align_offset_mask;
+		aligned_offset += BLOCK_SIZE;
+	}
+    return aligned_offset;
+}
+static void align_size_offset(size_t size, off_t offset, size_t *aligned_size, off_t *aligned_offset){
+    *aligned_offset = align_start(offset);
+    off_t end_offset = *aligned_offset+size;
+    off_t aligned_end_offset = align_end(end_offset);
+    *aligned_size = aligned_end_offset - *aligned_offset;
+}
+static void lofe_encrypt(char *buf, size_t size){
+    size_t i;
+    if(size % BLOCK_SIZE){printf("FATAL_ERROR: encrypt, size not aligned on block size\n");exit(-1);}
+    for(i=0;i<size;i++){
+        buf[i] = buf[i]+1;
+    }
+}
+static void lofe_decrypt(char *buf, size_t size){
+    size_t i;
+    if(size % BLOCK_SIZE){printf("FATAL_ERROR: decrypt, size not aligned on block size\n");exit(-1);}
+    for(i=0;i<size;i++){
+        buf[i] = buf[i]-1;
+    }
+}
+
 static char *base_path;
 static unsigned int base_path_len;
 
@@ -73,6 +114,70 @@ proc fixPath { {name path} } {``
     `$name` = actual_`$name`_ptr;
 ``	return [tgpp::getProcOutput]
 }``
+
+static int write_header(int fd, uint64_t len){
+	lofe_header_t header;
+	header.info=0;
+	header.iv[0] = 0x0123456789ABCDEF;
+	header.iv[1] = 0x1122334455667788;
+	header.content_len=len;
+	int res = pwrite(fd, &header, sizeof(header), 0);
+	if (res == -1){
+		printf("write_header failure: %d\n",errno);
+		res = -errno;
+	}
+	return 0;
+}
+
+static int read_header2(const char *native_path, lofe_header_t *header){
+	int fd;
+	int res;
+	fd = open(native_path, O_RDONLY);
+	if (fd == -1)
+		return -errno;
+	res = pread(fd, header, sizeof(lofe_header_t), 0);
+	if (res == -1)
+		return -errno;	
+	close(fd);
+	return 0;
+}
+
+static int write_header2(const char *native_path, lofe_header_t new_header){
+	int fd;
+	int res;
+	fd = open(native_path, O_WRONLY);
+	if (fd == -1)
+		return -errno;
+	res = pwrite(fd, &new_header, sizeof(lofe_header_t), 0);
+	if (res == -1)
+		return -errno;	
+	close(fd);
+	return 0;
+}
+
+static int update_header_len(int fd, uint64_t content_len){
+	int res;
+	lofe_header_t header;
+	res = pwrite(fd, &header, sizeof(lofe_header_t), 0);
+	header.content_len = content_len;
+	res = pwrite(fd, &header, sizeof(lofe_header_t), 0);
+	if (res == -1)
+		return -errno;	
+	return 0;
+}
+
+static int update_header_len2(const char *native_path, uint64_t len){
+	int fd;
+	int res;
+	fd = open(native_path, O_RDWR);
+	if (fd == -1)
+		return -errno;
+	res=update_header_len(fd,len);
+	if (res == -1)
+		return -errno;	
+	close(fd);
+	return 0;
+}
 
 static int xmp_getattr(const char *path, struct stat *stbuf){
     `logStr xmp_getattr`
@@ -129,21 +234,6 @@ static int xmp_readdir(
 	closedir(dp);
 	return 0;
 }
-
-static int write_header(int fd, uint64_t len){
-	lofe_header_t header;
-	header.info=0;
-	header.iv[0] = 0x0123456789ABCDEF;
-	header.iv[1] = 0x1122334455667788;
-	header.content_len=len;
-	int res = pwrite(fd, &header, sizeof(header), 0);
-	if (res == -1){
-		printf("write_header failure: %d\n",errno);
-		res = -errno;
-	}
-	return 0;
-}
-
 
 //create a file
 static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
@@ -250,7 +340,12 @@ static int xmp_truncate(const char *path, off_t size){
 	`logStr xmp_truncate`
 	int res;
 	`fixPath`
+	//update header
+	res = update_header_len2(path, size);//write the requested size in the header
+	if (res)
+		return res;
 	size+=sizeof(lofe_header_t);//keep the header, truncate only the content to the requested size.
+	size = align_end(size);//keep actual file size a multiple of the block size;
     res = truncate(path, size);
 	if (res == -1)
 		return -errno;
@@ -273,31 +368,9 @@ static int xmp_open(const char *path, struct fuse_file_info *fi){
 	int res=0;
 	`fixPath`
 	printf("openning %s\n",path);
-	/*//determine if the file already exist
-	int dont_exist = access (path, F_OK);
-	if(dont_exist) printf("file does not exist\n");
-	else printf("file exist\n");*/
-    //open the file in the underlying filesystem
 	fd = open(path, fi->flags);
 	if (fd == -1)
 		return -errno;
-	/*//if we created the file, write the header
-	if(dont_exist || (fi->flags & O_CREAT)){
-		printf("O_CREATE flag: creating header...");
-		lofe_header_t header;
-		header.info=0;
-		header.iv[0] = 0x0123456789ABCDEF;
-		header.iv[1] = 0x1122334455667788;
-		header.content_len=0;
-		res = pwrite(fd, &header, sizeof(header), 0);
-		if (res == -1){
-			printf("failure: %d\n",errno);
-			res = -errno;
-		}
-		printf("success\n");
-	} else {
-		printf("header expected to be present already\n");
-	}*/
 	close(fd);
 	return res;
 }
@@ -310,15 +383,42 @@ static int xmp_read(
 	`logStr xmp_read`
 	int fd;
 	int res;
+	off_t read_offset;
+	size_t read_size;
+	lofe_header_t header;
 	(void) fi;
 	`fixPath`
     fd = open(path, O_RDONLY);
 	if (fd == -1)
 		return -errno;
-	res = pread(fd, buf, size, offset+sizeof(lofe_header_t));
+	
+	//get the current size of the content, store it in header.content_len
+	res = pread(fd, &header, sizeof(lofe_header_t), 0);
+	if (res == -1){
+		close(fd);
+		return -errno;
+	}
+	
+	//Check EOF condition
+	if(offset>=header.content_len){
+		close(fd);
+		return 0;
+	}
+	
+	//adjust the size so that we don't read out of the actual content (that can happen due to padding)
+	read_size = size;
+	if(offset+size>header.content_len){
+		read_size = header.content_len-offset;
+	}
+	
+	read_offset = offset+sizeof(lofe_header_t);
+	
+	res = pread(fd, buf, read_size, read_offset);
 	if (res == -1)
 		res = -errno;
 	close(fd);
+	
+	
 	return res;
 }
 
@@ -331,16 +431,122 @@ static int xmp_write(
 	`logStr xmp_write`
 	int fd;
 	int res;
+	lofe_header_t header;
+	off_t content_end_write_pos;
+	size_t aligned_size;
+	off_t aligned_offset;
+	size_t write_offset;
+	size_t n_blocks;
+	size_t regular_blocks;
+	size_t block;
+	size_t last_block_unaligned_size;
+	struct stat st;
 	(void) fi;
 	`fixPath`
-    fd = open(path, O_WRONLY);
+    fd = open(path, O_RDWR);
 	if (fd == -1)
 		return -errno;
-	res = pwrite(fd, buf, size, offset+sizeof(lofe_header_t));
-	if (res == -1)
-		res = -errno;
+	
+	//get the current size of the content, store it in header.content_len
+	res = pread(fd, &header, sizeof(lofe_header_t), 0);
+	if (res == -1){
+		close(fd);
+		return -errno;
+	}
+	
+	content_end_write_pos = offset + size;
+	align_size_offset(size,offset,&aligned_size,&aligned_offset);
+	write_offset = aligned_offset+sizeof(lofe_header_t);
+	n_blocks = aligned_size / BLOCK_SIZE;
+	regular_blocks = n_blocks;
+	last_block_unaligned_size = content_end_write_pos % BLOCK_SIZE;
+		
+	if(last_block_unaligned_size) 
+		regular_blocks--;//remove the last block from the count of regular blocks
+
+	//process initial block if it is not aligned, otherwise it is treated as a regular block
+	if(aligned_offset!=offset){
+		off_t read_size = offset-aligned_offset;
+		off_t unaligned_size = BLOCK_SIZE-read_size;
+		uint8_t aligned_buf[BLOCK_SIZE];
+		regular_blocks--;//remove the first block from the count of regular blocks.
+		
+		//read beginning of the block from file
+		res = pread(fd, aligned_buf, read_size, write_offset);
+		if (res == -1){
+			close(fd);
+			return -errno;
+		}
+		//copy the unaligned data to aligned_buf to form a full block
+		memcpy(aligned_buf+read_size,buf,unaligned_size);
+		//write the aligned block to file
+		res = pwrite(fd, aligned_buf, BLOCK_SIZE, write_offset);
+		if (res == -1){
+			close(fd);
+			return -errno;
+		}	
+		if(res!=BLOCK_SIZE){
+			printf("ERROR: write, could not write all the requested bytes to %s\n", path);
+			close(fd);
+			return -1;
+		}
+		write_offset+=BLOCK_SIZE;
+		buf+=unaligned_size;
+	} 
+	
+	//process regular blocks
+	for(block=0;block<regular_blocks;block++){
+		res = pwrite(fd, buf, BLOCK_SIZE, write_offset);
+		if (res == -1){
+			close(fd);
+			return -errno;
+		}	
+		if(res!=BLOCK_SIZE){
+			printf("ERROR: write, could not write all the requested bytes to %s\n", path);
+			close(fd);
+			return -1;
+		}
+		write_offset+=BLOCK_SIZE;
+		buf+=BLOCK_SIZE;
+	}
+	
+	//process final block if it is not aligned, otherwise it was treated as a regular block
+	if(last_block_unaligned_size){
+		off_t read_size = BLOCK_SIZE-last_block_unaligned_size;
+		uint8_t aligned_buf[BLOCK_SIZE];
+		
+		//read end of the block from file
+		res = pread(fd, aligned_buf+last_block_unaligned_size, read_size, write_offset);
+		if (res == -1){
+			close(fd);
+			return -errno;
+		}
+		//copy the unaligned data to aligned_buf to form a full block
+		memcpy(aligned_buf,buf,last_block_unaligned_size);
+		//write the aligned block to file
+		res = pwrite(fd, aligned_buf, BLOCK_SIZE, write_offset);
+		if (res == -1){
+			close(fd);
+			return -errno;
+		}	
+		if(res!=BLOCK_SIZE){
+			printf("ERROR: write, could not write all the requested bytes to %s\n", path);
+			close(fd);
+			return -1;
+		}
+	}
+	
+	//if the file grew, update the header
+	if(header.content_len<content_end_write_pos){
+		res = update_header_len(fd, content_end_write_pos);
+		if (res){
+			close(fd);
+			return -errno;
+		}		
+	}
+	
 	close(fd);
-	return res;
+	return size;
 }
 
 static int xmp_statfs(const char *path, struct statvfs *stbuf){
@@ -485,9 +691,14 @@ static struct fuse_operations xmp_oper = {
 };
 
 int main(int argc, char *argv[]){
+	uint8_t key_bytes[] = {0xC5, 0xE6, 0x67, 0xEE, 0x10, 0x97, 0x19, 0x74, 0xDA, 0xC5, 0x52, 0x65, 0x26, 0x01, 0x77, 0x05};
 	char *fuse_argv[100];
 	int fuse_argc = argc+3;
 	int i;
+	//secret key
+    for(i=0;i<sizeof(key_bytes);i++) ((uint8_t*)key)[i] = key_bytes[i]; 
+        
+    //command line arguments:    
 	for(i=0;i<argc;i++) fuse_argv[i]=argv[i];
 	fuse_argv[argc+0] = "-o";
 	fuse_argv[argc+1] = "auto_unmount";
