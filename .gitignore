@@ -82,3 +82,4 @@ linux/codelite/.codelite/lofe.tags
 linux/codelite/Debug/linux_lofe.c.o.d
 linux/codelite/Debug/.d
 linux/codelite/lofe.txt
+*.class

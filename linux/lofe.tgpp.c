@@ -383,9 +383,16 @@ static int xmp_read(
 	`logStr xmp_read`
 	int fd;
 	int res;
-	off_t read_offset;
+	size_t aligned_size;
+	off_t aligned_offset;
+	size_t read_offset;
 	size_t read_size;
 	lofe_header_t header;
+	size_t n_blocks;
+	size_t regular_blocks;
+	size_t block;
+	size_t last_block_unaligned_size;
+	off_t content_end_read_pos;
 	(void) fi;
 	`fixPath`
     fd = open(path, O_RDONLY);
@@ -411,15 +418,78 @@ static int xmp_read(
 		read_size = header.content_len-offset;
 	}
 	
-	read_offset = offset+sizeof(lofe_header_t);
+	content_end_read_pos = offset + read_size;
+	align_size_offset(read_size,offset,&aligned_size,&aligned_offset);
+	read_offset = aligned_offset+sizeof(lofe_header_t);
+	n_blocks = aligned_size / BLOCK_SIZE;
+	regular_blocks = n_blocks;
+	last_block_unaligned_size = content_end_read_pos % BLOCK_SIZE;
 	
-	res = pread(fd, buf, read_size, read_offset);
-	if (res == -1)
-		res = -errno;
+	if(last_block_unaligned_size) 
+		regular_blocks--;//remove the last block from the count of regular blocks
+
+	//process initial block if it is not aligned, otherwise it is treated as a regular block
+	if(aligned_offset!=offset){
+		off_t unaligned_offset = offset-aligned_offset;
+		off_t unaligned_size = BLOCK_SIZE-read_size;
+		uint8_t aligned_buf[BLOCK_SIZE];
+	
+		//read unaligned data
+		res = pread(fd, aligned_buf, BLOCK_SIZE, read_offset);
+		if (res == -1){
+			close(fd);
+			return -errno;
+		}
+		if(res!=BLOCK_SIZE){
+			printf("ERROR: read, could not read all the requested bytes to %s\n", path);
+			close(fd);
+			return -1;
+		}
+		
+		//copy to output buffer
+		memcpy(buf,aligned_buf+unaligned_offset,unaligned_size);
+		read_offset+=BLOCK_SIZE;
+		buf+=unaligned_offset;
+	}
+	
+	//process regular blocks
+	for(block=0;block<regular_blocks;block++){
+		res = pread(fd, buf, BLOCK_SIZE, read_offset);
+		if (res == -1){
+			close(fd);
+			return -errno;
+		}	
+		if(res!=BLOCK_SIZE){
+			printf("ERROR: read, could not read all the requested bytes to %s\n", path);
+			close(fd);
+			return -1;
+		}
+		read_offset+=BLOCK_SIZE;
+		buf+=BLOCK_SIZE;
+	}
+	
+	//process final block if it is not aligned, otherwise it was treated as a regular block
+	if(last_block_unaligned_size){
+		uint8_t aligned_buf[BLOCK_SIZE];
+		
+		//read end of the block from file
+		res = pread(fd, aligned_buf, BLOCK_SIZE, read_offset);
+		if (res == -1){
+			close(fd);
+			return -errno;
+		}
+		if(res!=BLOCK_SIZE){
+			printf("ERROR: read, could not read all the requested bytes to %s\n", path);
+			close(fd);
+			return -1;
+		}
+		
+		//copy to output buffer
+		memcpy(buf,aligned_buf,last_block_unaligned_size);
+	}
 	close(fd);
 	
-	
-	return res;
+	return read_size;
 }
 
 static int xmp_write(

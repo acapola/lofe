@@ -55,6 +55,18 @@ public class FileSystemTest {
         }
     }
 
+    static byte[] readBytes(File path, long fileOffset, int len) throws IOException {
+        RandomAccessFile ra = new RandomAccessFile(path, "rw");
+        byte[] out = new byte[len];
+        try {
+            ra.seek(fileOffset);
+            ra.read(out);
+        } finally {
+            ra.close();
+        }
+        return out;
+    }
+
     static void assertEquals(byte[] a, byte[]b){
         assert(a.length==b.length);
         for(int i=0;i<a.length;i++) assert(a[i]==b[i]);
@@ -104,5 +116,26 @@ public class FileSystemTest {
         }
         byte[] readData = Files.readAllBytes(f.toPath());
         assertEquals(data, readData);
+    }
+
+    @org.junit.Test
+    public void testBinaryUnalignedRead() throws Exception {
+        byte[] data = new byte[100];
+        for (int i = 0; i < data.length; i++) data[i] = (byte) i;
+        String name = "testBinaryUnalignedRead";
+        File f = new File(base, name);
+        assert (!f.exists());
+        writeToFile(data, f);
+        int sizes[] = new int[]{15,17,20,31,33};
+        int offset=0;
+        for(int i=0;i<sizes.length;i++) {
+            int next_offset=sizes[i];
+            int len=next_offset-offset;
+            byte[] expected = new byte[len];
+            for (int j = 0; j < len; j++) expected[j] = (byte) (offset+j);
+            byte[] readData = readBytes(f,offset,len);
+            assertEquals(expected, readData);
+            offset=next_offset;
+        }
     }
 }
