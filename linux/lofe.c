@@ -57,7 +57,7 @@ static off_t align_end(off_t offset){
 }
 static void align_size_offset(size_t size, off_t offset, size_t *aligned_size, off_t *aligned_offset){
     *aligned_offset = align_start(offset);
-    off_t end_offset = *aligned_offset+size;
+    off_t end_offset = offset+size;
     off_t aligned_end_offset = align_end(end_offset);
     *aligned_size = aligned_end_offset - *aligned_offset;
 }
@@ -132,7 +132,7 @@ static int write_header2(const char *native_path, lofe_header_t new_header){
 static int update_header_len(int fd, uint64_t content_len){
 	int res;
 	lofe_header_t header;
-	res = pwrite(fd, &header, sizeof(lofe_header_t), 0);
+	res = pread(fd, &header, sizeof(lofe_header_t), 0);
 	header.content_len = content_len;
 	res = pwrite(fd, &header, sizeof(lofe_header_t), 0);
 	if (res == -1)
@@ -609,9 +609,18 @@ static int xmp_write(
 	//process initial block if it is not aligned, otherwise it is treated as a regular block
 	if(aligned_offset!=offset){
 		off_t read_size = offset-aligned_offset;
+		off_t unaligned_offset = read_size;
 		off_t unaligned_size = BLOCK_SIZE-read_size;
 		uint8_t aligned_buf[BLOCK_SIZE];
-		regular_blocks--;//remove the first block from the count of regular blocks.
+		
+        if(0==regular_blocks){//first block = last block
+            if(last_block_unaligned_size){
+                read_size=BLOCK_SIZE;
+                last_block_unaligned_size=0;
+            }
+        } else {
+            regular_blocks--;//remove the first block from the count of regular blocks.
+		}
 		
 		//read beginning of the block from file
 		res = pread(fd, aligned_buf, read_size, write_offset);
@@ -620,7 +629,7 @@ static int xmp_write(
 			return -errno;
 		}
 		//copy the unaligned data to aligned_buf to form a full block
-		memcpy(aligned_buf+read_size,buf,unaligned_size);
+		memcpy(aligned_buf+unaligned_offset,buf,unaligned_size);
 		//write the aligned block to file
 		res = pwrite(fd, aligned_buf, BLOCK_SIZE, write_offset);
 		if (res == -1){
