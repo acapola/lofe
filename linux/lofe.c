@@ -1,4 +1,4 @@
-﻿/*
+/*
 FUSE: Filesystem in Userspace
 Copyright (C) 2001-2007 Miklos Szeredi <miklos@szeredi.hu>
 Copyright (C) 2011 Sebastian Pipping <sebastian@pipping.org>
@@ -61,18 +61,16 @@ static void align_size_offset(size_t size, off_t offset, size_t *aligned_size, o
     off_t aligned_end_offset = align_end(end_offset);
     *aligned_size = aligned_end_offset - *aligned_offset;
 }
-static void lofe_encrypt(int8_t *buf, size_t size){
+static void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset){
     size_t i;
-    if(size % BLOCK_SIZE){printf("FATAL_ERROR: encrypt, size not aligned on block size\n");exit(-1);}
-    for(i=0;i<size;i++){
-        buf[i] = buf[i]+1;
+    for(i=0;i<BLOCK_SIZE;i++){
+        dst[i] = src[i]+1;
     }
 }
-static void lofe_decrypt(int8_t *buf, size_t size){
+static void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset){
     size_t i;
-    if(size % BLOCK_SIZE){printf("FATAL_ERROR: decrypt, size not aligned on block size\n");exit(-1);}
-    for(i=0;i<size;i++){
-        buf[i] = buf[i]-1;
+    for(i=0;i<BLOCK_SIZE;i++){
+        dst[i] = src[i]-1;
     }
 }
 
@@ -154,11 +152,12 @@ static int update_header_len2(const char *native_path, uint64_t len){
 }
 
 static int lofe_read_block(int fd, int8_t*buf, off_t offset, const lofe_header_t * const header){
+	int8_t enc_buf[BLOCK_SIZE];
 	if(offset%BLOCK_SIZE) {
 		printf("ERROR: lofe_read_block, unaligned offset: %X\n",offset);
 		return -EINVAL;
 	}
-	int res = pread(fd, buf, BLOCK_SIZE, offset);
+	int res = pread(fd, enc_buf, BLOCK_SIZE, offset);
 	if (res <= 0){
 		return res;
 	}
@@ -166,15 +165,18 @@ static int lofe_read_block(int fd, int8_t*buf, off_t offset, const lofe_header_t
 		printf("ERROR: lofe_read_block, could not read all the requested bytes\n");
 		return -EIO;
 	}
+	lofe_decrypt_block(buf,enc_buf,header->iv,offset);
 	return BLOCK_SIZE;
 }
 
 static int lofe_write_block(int fd, const int8_t * const buf, off_t offset, const lofe_header_t * const header){
+	int8_t enc_buf[BLOCK_SIZE];
 	if(offset%BLOCK_SIZE) {
 		printf("ERROR: lofe_write_block, unaligned offset: %X\n",offset);
 		return -EINVAL;
 	}
-	int res = pwrite(fd, buf, BLOCK_SIZE, offset);
+	lofe_encrypt_block(enc_buf,buf,header->iv,offset);
+	int res = pwrite(fd, enc_buf, BLOCK_SIZE, offset);
 	if (res == -1){
 		return -1;
 	}
@@ -963,11 +965,15 @@ static struct fuse_operations xmp_oper = {
 	#endif
 };
 
+int aes128_self_test(void);
 int main(int argc, char *argv[]){
 	uint8_t key_bytes[] = {0xC5, 0xE6, 0x67, 0xEE, 0x10, 0x97, 0x19, 0x74, 0xDA, 0xC5, 0x52, 0x65, 0x26, 0x01, 0x77, 0x05};
 	char *fuse_argv[100];
 	int fuse_argc = argc+3;
 	int i;
+    
+    printf("aes self test: %d\n",aes128_self_test());
+    
 	//secret key
     for(i=0;i<sizeof(key_bytes);i++) ((uint8_t*)key)[i] = key_bytes[i]; 
         

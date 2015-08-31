@@ -21,6 +21,7 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="../lofe.c"/>
+    <File Name="../../x86/aes-ni.c"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -33,8 +34,9 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-g;-O0;-Wall;-msse2;-msse;-march=native;-maes" C_Options="-g;-O0;-Wall;-msse2;-msse;-march=native;-maes" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
+        <IncludePath Value="../../x86"/>
         <Preprocessor Value="_FILE_OFFSET_BITS=64"/>
       </Compiler>
       <Linker Options="" Required="yes">

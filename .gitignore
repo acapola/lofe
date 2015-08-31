@@ -83,3 +83,5 @@ linux/codelite/Debug/linux_lofe.c.o.d
 linux/codelite/Debug/.d
 linux/codelite/lofe.txt
 *.class
+linux/codelite/Debug/linux_aes.c.o.d
+linux/codelite/.codelite/lofe.session
