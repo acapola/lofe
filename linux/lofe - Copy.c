@@ -1,4 +1,4 @@
-﻿/*
+/*
 FUSE: Filesystem in Userspace
 Copyright (C) 2001-2007 Miklos Szeredi <miklos@szeredi.hu>
 Copyright (C) 2011 Sebastian Pipping <sebastian@pipping.org>
@@ -27,7 +27,7 @@ See the file COPYING.
 #endif
 #include <stdlib.h>
 #include <stdint.h>
-#include "lofe_aes.h"
+
 
 typedef struct lofe_header_struct_t {
 	uint64_t info;
@@ -35,7 +35,7 @@ typedef struct lofe_header_struct_t {
 	uint64_t iv[2];
 } lofe_header_t;
 
-//uint64_t key[2];
+uint64_t key[2];
 #define BLOCK_SIZE 16
 	
 static off_t align_start(off_t offset){
@@ -62,10 +62,16 @@ static void align_size_offset(size_t size, off_t offset, size_t *aligned_size, o
     *aligned_size = aligned_end_offset - *aligned_offset;
 }
 static void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset){
-	aes_enc128(src,dst);
+    size_t i;
+    for(i=0;i<BLOCK_SIZE;i++){
+        dst[i] = src[i]+1;
+    }
 }
 static void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset){
-	aes_dec128(src,dst);
+    size_t i;
+    for(i=0;i<BLOCK_SIZE;i++){
+        dst[i] = src[i]-1;
+    }
 }
 
 static char *base_path;
@@ -185,7 +191,6 @@ static int lofe_write_block(int fd, const int8_t * const buf, off_t offset, cons
 static int xmp_getattr(const char *path, struct stat *stbuf){
     printf("xmp_getattr\n");
 	int res;
-	lofe_header_t header;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){
@@ -198,12 +203,7 @@ static int xmp_getattr(const char *path, struct stat *stbuf){
     res = lstat(path, stbuf);
     if (res == -1)
         return -errno;
-	if(S_IFREG==(stbuf->st_mode & S_IFMT)){//if regular file
-        res = read_header2(path, &header);
-        if (res)
-            return res;
-        stbuf->st_size=header.content_len;//return the size of the content
-    }
+	stbuf->st_size-=sizeof(lofe_header_t);//return the size of the file without the size of the header
     return 0;
 }
 static int xmp_access(const char *path, int mask){
@@ -965,22 +965,21 @@ static struct fuse_operations xmp_oper = {
 	#endif
 };
 
+int aes128_self_test(void);
 int main(int argc, char *argv[]){
 	uint8_t key_bytes[] = {0xC5, 0xE6, 0x67, 0xEE, 0x10, 0x97, 0x19, 0x74, 0xDA, 0xC5, 0x52, 0x65, 0x26, 0x01, 0x77, 0x05};
 	char *fuse_argv[100];
 	int fuse_argc = argc+3;
 	int i;
-	
-	int aes_self_test_result = aes_self_test128();
+    
+    int aes_self_test_result = aes128_self_test();
     if(aes_self_test_result){
         printf("aes self test failed with error code: %d\n",aes_self_test_result);
         exit(-1);
     }
-	
-	
+    
 	//secret key
-    aes_load_key128(key_bytes);
-    //for(i=0;i<sizeof(key_bytes);i++) ((uint8_t*)key)[i] = key_bytes[i]; 
+    for(i=0;i<sizeof(key_bytes);i++) ((uint8_t*)key)[i] = key_bytes[i]; 
         
     //command line arguments:    
 	for(i=0;i<argc;i++) fuse_argv[i]=argv[i];

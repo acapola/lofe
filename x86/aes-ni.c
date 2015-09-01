@@ -49,7 +49,7 @@ static __m128i aes_128_key_expansion(__m128i key, __m128i keygened){
 }
 
 //public API
-void aes128_load_key(int8_t *enc_key){
+void aes_load_key128(int8_t *enc_key){
     key_schedule[0] = _mm_loadu_si128((const __m128i*) enc_key);
 	key_schedule[1]  = AES_128_key_exp(key_schedule[0], 0x01);
 	key_schedule[2]  = AES_128_key_exp(key_schedule[1], 0x02);
@@ -77,7 +77,7 @@ void aes128_load_key(int8_t *enc_key){
 	key_schedule[19] = _mm_aesimc_si128(key_schedule[1]);
 }
 
-void aes128_enc(int8_t *plainText,int8_t *cipherText){
+void aes_enc128(int8_t *plainText,int8_t *cipherText){
     __m128i m = _mm_loadu_si128((__m128i *) plainText);
 
     DO_ENC_BLOCK(m,key_schedule);
@@ -85,7 +85,7 @@ void aes128_enc(int8_t *plainText,int8_t *cipherText){
     _mm_storeu_si128((__m128i *) cipherText, m);
 }
 
-void aes128_dec(int8_t *cipherText,int8_t *plainText){
+void aes_dec128(int8_t *cipherText,int8_t *plainText){
     __m128i m = _mm_loadu_si128((__m128i *) cipherText);
 
     DO_DEC_BLOCK(m,key_schedule);
@@ -97,16 +97,16 @@ void aes128_dec(int8_t *cipherText,int8_t *plainText){
 //1 if encryption failed
 //2 if decryption failed
 //3 if both failed
-int aes128_self_test(void){
+int aes_self_test128(void){
     int8_t plain[]      = {0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34};
     int8_t enc_key[]    = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
     int8_t cipher[]     = {0x39, 0x25, 0x84, 0x1d, 0x02, 0xdc, 0x09, 0xfb, 0xdc, 0x11, 0x85, 0x97, 0x19, 0x6a, 0x0b, 0x32};
     int8_t computed_cipher[16];
     int8_t computed_plain[16];
     int out=0;
-    aes128_load_key(enc_key);
-    aes128_enc(plain,computed_cipher);
-    aes128_dec(cipher,computed_plain);
+    aes_load_key128(enc_key);
+    aes_enc128(plain,computed_cipher);
+    aes_dec128(cipher,computed_plain);
     if(memcmp(cipher,computed_cipher,sizeof(cipher))) out=1;
     if(memcmp(plain,computed_plain,sizeof(plain))) out|=2;
     return out;

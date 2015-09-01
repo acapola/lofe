@@ -81,6 +81,23 @@ public class FileSystemTest {
         writeToFile(data,f);
         byte[] readData = Files.readAllBytes(f.toPath());
         assertEquals(data,readData);
+        long len = f.length();
+        assert(len==data.length);
+        assert(f.length()==data.length);
+    }
+
+    @org.junit.Test
+    public void testBinaryAlignedSubBlock() throws Exception {
+        byte[] data = new byte[13];
+        for(int i=0;i<data.length;i++) data[i]=(byte)i;
+        File f = new File(base,"testBinaryAlignedSubBlock");
+        assert(!f.exists());
+        writeToFile(data,f);
+        byte[] readData = Files.readAllBytes(f.toPath());
+        assertEquals(data,readData);
+        long len = f.length();
+        assert(len==data.length);
+        assert(f.length()==data.length);
     }
 
     @org.junit.Test
@@ -95,6 +112,7 @@ public class FileSystemTest {
             writeToFile(data, f);
             byte[] readData = Files.readAllBytes(f.toPath());
             assertEquals(data, readData);
+            assert(f.length()==data.length);
         }
     }
 
@@ -116,6 +134,7 @@ public class FileSystemTest {
         }
         byte[] readData = Files.readAllBytes(f.toPath());
         assertEquals(data, readData);
+        assert(f.length()==data.length);
     }
 
     @org.junit.Test
@@ -137,5 +156,8 @@ public class FileSystemTest {
             assertEquals(expected, readData);
             offset=next_offset;
         }
+        byte[] readData = Files.readAllBytes(f.toPath());
+        assertEquals(data, readData);
+        assert(f.length()==data.length);
     }
 }
