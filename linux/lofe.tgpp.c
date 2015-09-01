@@ -27,49 +27,25 @@ See the file COPYING.
 #endif
 #include <stdlib.h>
 #include <stdint.h>
-#include "lofe_aes.h"
-
-typedef struct lofe_header_struct_t {
-	uint64_t info;
-	uint64_t content_len;
-	uint64_t iv[2];
-} lofe_header_t;
-
-//uint64_t key[2];
-#define BLOCK_SIZE 16
-	
-static off_t align_start(off_t offset){
-    off_t aligned_offset;
-    size_t align_offset_mask = BLOCK_SIZE-1;
-    align_offset_mask = ~align_offset_mask;
-    aligned_offset = offset & align_offset_mask;
-    return aligned_offset;
-}
-static off_t align_end(off_t offset){
-    off_t aligned_offset;
-    size_t align_offset_mask = BLOCK_SIZE-1;
-	aligned_offset=offset;
-    if(aligned_offset & align_offset_mask){
-		aligned_offset &= ~align_offset_mask;
-		aligned_offset += BLOCK_SIZE;
-	}
-    return aligned_offset;
-}
-static void align_size_offset(size_t size, off_t offset, size_t *aligned_size, off_t *aligned_offset){
-    *aligned_offset = align_start(offset);
-    off_t end_offset = offset+size;
-    off_t aligned_end_offset = align_end(end_offset);
-    *aligned_size = aligned_end_offset - *aligned_offset;
-}
-static void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset){
-	aes_enc128(src,dst);
-}
-static void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset){
-	aes_dec128(src,dst);
-}
+#include "lofe_internals.h"
 
 static char *base_path;
 static unsigned int base_path_len;
+
+static FILE *urandom=0;
+static void get_random(int8_t*buf, unsigned int len){
+	unsigned int byte_count;
+	int res = fread(buf, 1, len, urandom);
+	if(res!=len){
+		if(res == -1){
+			printf("FATAL_ERROR: can't read urandom!\n");
+			exit(-errno);
+		} else {
+			printf("FATAL_ERROR: urandom did not return enough data!\n");
+			exit(-1);
+		}
+	}
+}
 
 ``
 proc displayStrVar { name } {
@@ -110,8 +86,9 @@ proc fixPath { {name path} } {``
 static int write_header(int fd, uint64_t len){
 	lofe_header_t header;
 	header.info=0;
-	header.iv[0] = 0x0123456789ABCDEF;
-	header.iv[1] = 0x1122334455667788;
+	//header.iv[0] = 0x0123456789ABCDEF;
+	//header.iv[1] = 0x1122334455667788;
+	get_random(header.iv, sizeof(header.iv));
 	header.content_len=len;
 	int res = pwrite(fd, &header, sizeof(header), 0);
 	if (res == -1){
@@ -774,12 +751,12 @@ static struct fuse_operations xmp_oper = {
 	.removexattr = xmp_removexattr,
 	#endif
 };
-
 int main(int argc, char *argv[]){
 	uint8_t key_bytes[] = {0xC5, 0xE6, 0x67, 0xEE, 0x10, 0x97, 0x19, 0x74, 0xDA, 0xC5, 0x52, 0x65, 0x26, 0x01, 0x77, 0x05};
 	char *fuse_argv[100];
 	int fuse_argc = argc+3;
 	int i;
+	int res;
 	
 	int aes_self_test_result = aes_self_test128();
     if(aes_self_test_result){
@@ -787,6 +764,7 @@ int main(int argc, char *argv[]){
         exit(-1);
     }
 	
+	urandom = fopen("/dev/urandom", "r");
 	
 	//secret key
     aes_load_key128(key_bytes);
@@ -801,6 +779,8 @@ int main(int argc, char *argv[]){
 	base_path="/home/seb/tmp/public/lofe";
     base_path_len = strlen(base_path);
     umask(0);
-    return fuse_main(fuse_argc, fuse_argv, &xmp_oper, NULL);
+    res = fuse_main(fuse_argc, fuse_argv, &xmp_oper, NULL);
+	if(urandom!=0) fclose(urandom);
+	return res;
 }
 

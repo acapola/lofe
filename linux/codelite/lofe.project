@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="lofe" InternalType="Console">
   <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
@@ -12,9 +15,6 @@
   "arguments": [],
   "parentProject": ""
  }]]]>
-    </Plugin>
-    <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
     </Plugin>
   </Plugins>
   <Description/>
@@ -37,6 +37,7 @@
       <Compiler Options="-g;-O0;-Wall;-msse2;-msse;-march=native;-maes" C_Options="-g;-O0;-Wall;-msse2;-msse;-march=native;-maes" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="../../x86"/>
+        <IncludePath Value="../../generic"/>
         <Preprocessor Value="_FILE_OFFSET_BITS=64"/>
       </Compiler>
       <Linker Options="" Required="yes">

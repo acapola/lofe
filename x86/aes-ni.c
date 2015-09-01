@@ -111,3 +111,23 @@ int aes_self_test128(void){
     if(memcmp(plain,computed_plain,sizeof(plain))) out|=2;
     return out;
 }
+
+void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset){
+	__m128i _src = _mm_loadu_si128((__m128i *) src);
+	__m128i _iv = _mm_loadu_si128((__m128i *) iv);
+	uint64_t offset2[2] __attribute__((aligned(16))) = { 0, offset };
+    __m128i _offset2 = _mm_load_si128((__m128i *) offset2);
+	_src = _mm_xor_si128(_src,_iv);
+	_src = _mm_xor_si128(_src,_offset2);
+	aes_enc128((int8_t *)&_src,dst);
+}
+void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset){
+	uint64_t offset2[2] __attribute__((aligned(16))) = { 0, offset };
+    __m128i _offset2 = _mm_load_si128((__m128i *) offset2);
+	__m128i _iv = _mm_loadu_si128((__m128i *) iv);
+	__m128i _dst;
+	aes_dec128(src,(int8_t *)&_dst);
+	_dst = _mm_xor_si128(_dst,_iv);
+	_dst = _mm_xor_si128(_dst,_offset2);
+	_mm_storeu_si128((__m128i *) dst, _dst);
+}
