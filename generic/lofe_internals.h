@@ -1,6 +1,10 @@
 #ifndef __LOFE_INTERNALS_H__
 #define __LOFE_INTERNALS_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <stdint.h>
 #include "lofe_aes.h"
@@ -37,16 +41,15 @@ static void align_size_offset(size_t size, off_t offset, size_t *aligned_size, o
     *aligned_size = aligned_end_offset - *aligned_offset;
 }
 
+void lofe_load_key(int8_t *key,int8_t *key_tweak);
 void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset);
 void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset);
 
-/*
-static void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset){
-	aes_enc128(src,dst);
+
+int lofe_start_vfs(char *encrypted_files_path, char *mount_point);
+
+#ifdef __cplusplus
 }
-static void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset){
-	aes_dec128(src,dst);
-}
-*/
+#endif
 
 #endif //__LOFE_INTERNALS_H__

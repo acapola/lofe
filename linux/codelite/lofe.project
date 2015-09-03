@@ -20,8 +20,9 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="../lofe.c"/>
     <File Name="../../x86/aes-ni.c"/>
+    <File Name="../lofe_vfs.c"/>
+    <File Name="../../generic/lofe.cpp"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -44,7 +45,7 @@
         <Library Value="fuse"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="/home/seb/tmp/myfs" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="/home/seb/tmp/public/lofe /home/seb/tmp/myfs" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

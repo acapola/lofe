@@ -751,34 +751,27 @@ static struct fuse_operations xmp_oper = {
 	.removexattr = xmp_removexattr,
 	#endif
 };
-int main(int argc, char *argv[]){
-	uint8_t key_bytes[] = {0xC5, 0xE6, 0x67, 0xEE, 0x10, 0x97, 0x19, 0x74, 0xDA, 0xC5, 0x52, 0x65, 0x26, 0x01, 0x77, 0x05};
+int lofe_start_vfs(char *encrypted_files_path, char *mount_point) {
 	char *fuse_argv[100];
+	int argc = 2;
+	char *argv[2];
 	int fuse_argc = argc+3;
 	int i;
 	int res;
+	argv[0] = "lofe";
+	argv[1] = mount_point;
 	
-	int aes_self_test_result = aes_self_test128();
-    if(aes_self_test_result){
-        printf("aes self test failed with error code: %d\n",aes_self_test_result);
-        exit(-1);
-    }
+	base_path = encrypted_files_path;
+	base_path_len = strlen(base_path);
+    urandom = fopen("/dev/urandom", "r");
 	
-	urandom = fopen("/dev/urandom", "r");
-	
-	//secret key
-    aes_load_key128(key_bytes);
-    //for(i=0;i<sizeof(key_bytes);i++) ((uint8_t*)key)[i] = key_bytes[i]; 
-        
-    //command line arguments:    
+	//fuse command line arguments:    
 	for(i=0;i<argc;i++) fuse_argv[i]=argv[i];
 	fuse_argv[argc+0] = "-o";
 	fuse_argv[argc+1] = "auto_unmount";
 	fuse_argv[argc+2] = "-f";
 	
-	base_path="/home/seb/tmp/public/lofe";
-    base_path_len = strlen(base_path);
-    umask(0);
+	umask(0);
     res = fuse_main(fuse_argc, fuse_argv, &xmp_oper, NULL);
 	if(urandom!=0) fclose(urandom);
 	return res;
