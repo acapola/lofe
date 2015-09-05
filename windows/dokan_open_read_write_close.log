@@ -1,0 +1,1519 @@
+'lofe.exe' (Win32): Loaded '\\SEB-WIN7\work\lofe\windows\vs_express2015\Win32\Debug\lofe.exe'. Symbols loaded.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\ntdll.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\kernel32.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\KernelBase.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\user32.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\gdi32.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\lpk.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\usp10.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\msvcrt.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\advapi32.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\sechost.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\rpcrt4.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\sspicli.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\cryptbase.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded '\\SEB-WIN7\work\lofe\windows\vs_express2015\Win32\Debug\dokan.dll'. Symbols loaded.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\imm32.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\msctf.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Windows\SysWOW64\api-ms-win-core-synch-l1-2-0.dll'. Cannot find or open the PDB file.
+'lofe.exe' (Win32): Loaded 'C:\Program Files (x86)\AVG\AVG2015\avghookx.dll'. Cannot find or open the PDB file.
+RootDirectory: c:\tmp\public
+Dokan: debug mode on
+device opened
+mounted: t -> \Volume{d6cc17c5-1731-4085-bce7-964f1e9f5de9}
+###Create 0000
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\autorun.inf
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0001
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\AutoRun.inf
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0002
+OpenDirectory : c:\tmp\public\
+###Create 0003
+OpenDirectory : c:\tmp\public\
+###Create 0004
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0002
+###QueryVolumeInfo 0002
+
+CreateFile status = 0
+###Cleanup 0002
+Cleanup: c:\tmp\public\
+
+###QueryVolumeInfo 0003
+
+CreateFile status = 0
+###QueryVolumeInfo 0003
+###Close 0002
+Close: c:\tmp\public\
+
+###Cleanup 0003
+Cleanup: c:\tmp\public\
+
+###QueryVolumeInfo 0004
+###QueryVolumeInfo 0004
+###Close 0003
+Close: c:\tmp\public\
+
+###Cleanup 0004
+Cleanup: c:\tmp\public\
+
+###Close 0004
+Close: c:\tmp\public\
+
+###Create 0005
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100081
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###GetFileInfo 0005
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Create 0006
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100081
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###GetFileInfo 0006
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Create 0007
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\desktop.ini
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0008
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100081
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###FindFiles 0008
+FindFiles :c:\tmp\public\\*
+	FindFiles return 3 entries in c:\tmp\public\\*
+
+index from 0
+FileMatch? : . (null,0,0)
+  =>return
+FileMatch? : .. (null,0,1)
+  =>return
+FileMatch? : New Text Document.txt (null,0,2)
+  =>return
+index to 3
+index from 3
+FileMatch? : . (null,3,0)
+FileMatch? : .. (null,3,1)
+FileMatch? : New Text Document.txt (null,3,2)
+  STATUS_NO_MORE_FILES
+###Cleanup 0008
+Cleanup: c:\tmp\public\
+
+###Close 0008
+Close: c:\tmp\public\
+
+###Create 0009
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0009
+###QueryVolumeInfo 0009
+###Cleanup 0009
+Cleanup: c:\tmp\public\
+
+###Close 0009
+###Create 0010
+Close: c:\tmp\public\
+
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0010
+###QueryVolumeInfo 0010
+###Cleanup 0010
+Cleanup: c:\tmp\public\
+
+###Close 0010
+Close: c:\tmp\public\
+
+###Create 0011
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0011
+###QueryVolumeInfo 0011
+###Cleanup 0011
+Cleanup: c:\tmp\public\
+
+###Close 0011
+Close: c:\tmp\public\
+
+###Create 0012
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0012
+###QueryVolumeInfo 0012
+###Cleanup 0012
+Cleanup: c:\tmp\public\
+
+###Close 0012
+Close: c:\tmp\public\
+
+###Create 0013
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0013
+###QueryVolumeInfo 0013
+###Cleanup 0013
+Cleanup: c:\tmp\public\
+
+###Close 0013
+Close: c:\tmp\public\
+
+###Create 0014
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0014
+###QueryVolumeInfo 0014
+###Cleanup 0014
+Cleanup: c:\tmp\public\
+
+###Close 0014
+Close: c:\tmp\public\
+
+###Create 0015
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0015
+###QueryVolumeInfo 0015
+###Cleanup 0015
+Cleanup: c:\tmp\public\
+
+###Close 0015
+Close: c:\tmp\public\
+
+###Create 0016
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0016
+###QueryVolumeInfo 0016
+###Cleanup 0016
+Cleanup: c:\tmp\public\
+
+###Close 0016
+Close: c:\tmp\public\
+
+###Create 0017
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0017
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0017
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0017
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0018
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0018
+###QueryVolumeInfo 0018
+###Cleanup 0018
+Cleanup: c:\tmp\public\
+
+###Close 0018
+Close: c:\tmp\public\
+
+###Create 0019
+OpenDirectory : c:\tmp\public\
+###Create 0020
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+
+CreateFile status = 0
+###QueryVolumeInfo 0019
+###QueryVolumeInfo 0020
+###QueryVolumeInfo 0019
+###Cleanup 0020
+Cleanup: c:\tmp\public\
+
+###Cleanup 0019
+###Create 0021
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+Cleanup: c:\tmp\public\
+
+###Close 0020
+Close: c:\tmp\public\
+
+###Close 0019
+Close: c:\tmp\public\
+
+###Create 0022
+OpenDirectory : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+CreateFile status = 0
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+###QueryVolumeInfo 0022
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+###QueryVolumeInfo 0022
+###Cleanup 0022
+Cleanup: c:\tmp\public\
+
+	FlagsAndAttributes = 0x0
+###Close 0022
+Close: c:\tmp\public\
+
+###Create 0023
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0021
+Cleanup: c:\tmp\public\New Text Document.txt
+
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+###Create 0024
+###Close 0021
+   CreateDisposition 0x00000001
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+CreateFile : c:\tmp\public\New Text Document.txt
+Close: c:\tmp\public\New Text Document.txt
+
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0024
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0024
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0024
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0025
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0025
+###Cleanup 0025
+Cleanup: c:\tmp\public\
+
+###Close 0025
+###Create 0026
+Close: c:\tmp\public\
+
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0026
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0026
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0027
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0027
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0027
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0027
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0028
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0028
+###Cleanup 0028
+Cleanup: c:\tmp\public\
+
+###Close 0028
+Close: c:\tmp\public\
+
+###Create 0029
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+GetFileSecurity c:\tmp\public\
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+###Cleanup 0023
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+Cleanup: c:\tmp\public\
+
+	STANDARD_RIGHTS_EXECUTE
+###Close 0023
+Close: c:\tmp\public\
+
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0029
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0029
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0030
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0030
+###Cleanup 0030
+Cleanup: c:\tmp\public\
+
+###Close 0030
+Close: c:\tmp\public\
+
+###Create 0031
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0031
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0031
+###Create 0032
+Close: c:\tmp\public\New Text Document.txt
+
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0032
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0032
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0032
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0033
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0033
+###Cleanup 0033
+Cleanup: c:\tmp\public\
+
+###Close 0033
+###Create 0034
+   CreateDisposition 0x00000001
+Close: c:\tmp\public\
+
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0034
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0034
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0035
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0035
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0035
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0035
+###Create 0036
+Close: c:\tmp\public\New Text Document.txt
+
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0036
+###Cleanup 0036
+Cleanup: c:\tmp\public\
+
+###Close 0036
+###Create 0037
+Close: c:\tmp\public\
+
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0037
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0037
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0038
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0038
+###Cleanup 0038
+Cleanup: c:\tmp\public\
+
+###Close 0038
+Close: c:\tmp\public\
+
+###Create 0039
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0039
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0039
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0040
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0040
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0040
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0040
+###Create 0041
+OpenDirectory : c:\tmp\public\
+Close: c:\tmp\public\New Text Document.txt
+
+
+CreateFile status = 0
+###QueryVolumeInfo 0041
+###Cleanup 0041
+Cleanup: c:\tmp\public\
+
+###Close 0041
+Close: c:\tmp\public\
+
+###Create 0042
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0042
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0042
+###Create 0043
+Close: c:\tmp\public\New Text Document.txt
+
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0043
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0043
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0043
+###Create 0044
+Close: c:\tmp\public\New Text Document.txt
+
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0044
+###Cleanup 0044
+Cleanup: c:\tmp\public\
+
+###Close 0044
+Close: c:\tmp\public\
+
+###Create 0045
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x20080
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+GetFileSecurity c:\tmp\public\New Text Document.txt
+  GetUserObjectSecurity failed: ERROR_INSUFFICIENT_BUFFER
+GetFileSecurity c:\tmp\public\New Text Document.txt
+###Cleanup 0045
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0045
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0046
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0046
+###QueryVolumeInfo 0046
+###Cleanup 0046
+Cleanup: c:\tmp\public\
+
+###Close 0046
+Close: c:\tmp\public\
+
+###Create 0047
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0047
+###QueryVolumeInfo 0047
+###Cleanup 0047
+Cleanup: c:\tmp\public\
+
+###Close 0047
+Close: c:\tmp\public\
+
+###Create 0048
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0048
+###Cleanup 0048
+Cleanup: c:\tmp\public\
+
+###Close 0048
+Close: c:\tmp\public\
+
+###Create 0049
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###GetFileInfo 0049
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Cleanup 0049
+Cleanup: c:\tmp\public\
+
+###Close 0049
+Close: c:\tmp\public\
+
+###Create 0050
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: SYSTEM, DomainName: NT AUTHORITY
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###Create 0051
+OpenDirectory : c:\tmp\public\
+###GetFileInfo 0050
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Cleanup 0050
+Cleanup: c:\tmp\public\
+
+###Close 0050
+Close: c:\tmp\public\
+
+
+CreateFile status = 0
+###Create 0052
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0052
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0052
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0052
+###Create 0053
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+Close: c:\tmp\public\New Text Document.txt
+
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0053
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0053
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0053
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0054
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100081
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###FindFiles 0054
+FindFiles :c:\tmp\public\\*
+	FindFiles return 3 entries in c:\tmp\public\\*
+
+index from 0
+FileMatch? : . (New Text Document.txt,0,0)
+FileMatch? : .. (New Text Document.txt,0,0)
+FileMatch? : New Text Document.txt (New Text Document.txt,0,0)
+  =>return single entry
+index to 1
+###Cleanup 0054
+Cleanup: c:\tmp\public\
+
+###Close 0054
+Close: c:\tmp\public\
+
+###Create 0055
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100081
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###FindFiles 0055
+FindFiles :c:\tmp\public\\*
+	FindFiles return 3 entries in c:\tmp\public\\*
+
+index from 0
+FileMatch? : . (New Text Document.txt,0,0)
+FileMatch? : .. (New Text Document.txt,0,0)
+FileMatch? : New Text Document.txt (New Text Document.txt,0,0)
+  =>return single entry
+index to 1
+###Cleanup 0055
+Cleanup: c:\tmp\public\
+
+###Close 0055
+Close: c:\tmp\public\
+
+###Create 0056
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0056
+###Cleanup 0056
+Cleanup: c:\tmp\public\
+
+###Close 0056
+Close: c:\tmp\public\
+
+###Create 0057
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100080
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###QueryVolumeInfo 0057
+###GetFileInfo 0057
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0057
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0057
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0058
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100081
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###FindFiles 0058
+FindFiles :c:\tmp\public\\*
+	FindFiles return 3 entries in c:\tmp\public\\*
+
+index from 0
+FileMatch? : . (New Text Document.txt,0,0)
+FileMatch? : .. (New Text Document.txt,0,0)
+FileMatch? : New Text Document.txt (New Text Document.txt,0,0)
+  =>return single entry
+index to 1
+###Cleanup 0058
+Cleanup: c:\tmp\public\
+
+###Close 0058
+Close: c:\tmp\public\
+
+###Create 0059
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0059
+###Cleanup 0059
+Cleanup: c:\tmp\public\
+
+###Close 0059
+Close: c:\tmp\public\
+
+###Create 0060
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100080
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###QueryVolumeInfo 0060
+###GetFileInfo 0060
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0060
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0060
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0061
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0061
+###Cleanup 0061
+Cleanup: c:\tmp\public\
+
+###Close 0061
+###Create 0062
+Close: c:\tmp\public\
+
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100080
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###QueryVolumeInfo 0062
+###GetFileInfo 0062
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Cleanup 0062
+Cleanup: c:\tmp\public\
+
+###Close 0062
+Close: c:\tmp\public\
+
+###Create 0063
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0063
+###Cleanup 0063
+Cleanup: c:\tmp\public\
+
+###Close 0063
+Close: c:\tmp\public\
+
+###Create 0064
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100080
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###QueryVolumeInfo 0064
+###GetFileInfo 0064
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Cleanup 0064
+Cleanup: c:\tmp\public\
+
+###Close 0064
+Close: c:\tmp\public\
+
+###Create 0065
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###FindFiles 0065
+FindFiles :c:\tmp\public\\*
+	FindFiles return 3 entries in c:\tmp\public\\*
+
+index from 0
+FileMatch? : . (New Text Document.txt,0,0)
+FileMatch? : .. (New Text Document.txt,0,0)
+FileMatch? : New Text Document.txt (New Text Document.txt,0,0)
+  =>return single entry
+index to 1
+###Cleanup 0065
+Cleanup: c:\tmp\public\
+
+###Close 0065
+Close: c:\tmp\public\
+
+###Create 0066
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###QueryVolumeInfo 0066
+###GetFileInfo 0066
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###GetFileInfo 0066
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Cleanup 0066
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Read 0066
+ReadFile : c:\tmp\public\New Text Document.txt
+	invalid handle, cleanuped?
+	read 8, offset 0
+
+###Create 0067
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###FindFiles 0067
+FindFiles :c:\tmp\public\\*
+	FindFiles return 3 entries in c:\tmp\public\\*
+
+index from 0
+FileMatch? : . (New Text Document.txt,0,0)
+FileMatch? : .. (New Text Document.txt,0,0)
+FileMatch? : New Text Document.txt (New Text Document.txt,0,0)
+  =>return single entry
+index to 1
+###Cleanup 0067
+Cleanup: c:\tmp\public\
+
+###Close 0067
+Close: c:\tmp\public\
+
+###Create 0068
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0068
+###Cleanup 0068
+Cleanup: c:\tmp\public\
+
+###Close 0068
+Close: c:\tmp\public\
+
+###Create 0069
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100080
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###QueryVolumeInfo 0069
+###GetFileInfo 0069
+GetFileInfo : c:\tmp\public\New Text Document.txt
+	GetFileInformationByHandle success, file size = 8
+
+###Close 0066
+###Cleanup 0069
+Cleanup: c:\tmp\public\New Text Document.txt
+
+Close: c:\tmp\public\New Text Document.txt
+
+###Close 0069
+Close: c:\tmp\public\New Text Document.txt
+
+###Create 0070
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0070
+###QueryVolumeInfo 0070
+###Cleanup 0070
+Cleanup: c:\tmp\public\
+
+###Close 0070
+Close: c:\tmp\public\
+
+###Create 0071
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0071
+###QueryVolumeInfo 0071
+###Cleanup 0071
+Cleanup: c:\tmp\public\
+
+###Close 0071
+Close: c:\tmp\public\
+
+###Create 0072
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###QueryVolumeInfo 0072
+###Cleanup 0072
+Cleanup: c:\tmp\public\
+
+###Close 0072
+Close: c:\tmp\public\
+
+###Create 0073
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100080
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###QueryVolumeInfo 0073
+###GetFileInfo 0073
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Cleanup 0073
+Cleanup: c:\tmp\public\
+
+###Close 0073
+Close: c:\tmp\public\
+
+###Create 0074
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\New Text Document.txt
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x1
+	FILE_SHARE_READ
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###WriteFile 0074
+WriteFile : c:\tmp\public\New Text Document.txt, offset 0, length 11
+	write 11, offset 0
+
+###SetFileInfo 0074  20
+SetEndOfFile c:\tmp\public\New Text Document.txt, 11
+###SetFileInfo 0074  19
+SetAllocationSize c:\tmp\public\New Text Document.txt, 11
+###Create 0075
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+###FindFiles 0075
+FindFiles :c:\tmp\public\\*
+	FindFiles return 3 entries in c:\tmp\public\\*
+
+index from 0
+FileMatch? : . (New Text Document.txt,0,0)
+FileMatch? : .. (New Text Document.txt,0,0)
+FileMatch? : New Text Document.txt (New Text Document.txt,0,0)
+  =>return single entry
+index to 1
+###Cleanup 0075
+Cleanup: c:\tmp\public\
+
+###Close 0075
+Close: c:\tmp\public\
+
+###Cleanup 0074
+Cleanup: c:\tmp\public\New Text Document.txt
+
+###Close 0074
+Close: c:\tmp\public\New Text Document.txt
+
+###Cleanup 0051
+Cleanup: c:\tmp\public\
+
+###Close 0051
+Close: c:\tmp\public\
+
+Exception thrown at 0x761A7367 (kernel32.dll) in lofe.exe: 0x40010005: Control-C.
+
+The thread 0x1ce0 has exited with code -1073741510 (0xc000013a).
+The thread 0x1b9c has exited with code -1073741510 (0xc000013a).
+The thread 0x2370 has exited with code -1073741510 (0xc000013a).
+The thread 0x1ff0 has exited with code -1073741510 (0xc000013a).
+The thread 0xfb4 has exited with code -1073741510 (0xc000013a).
+The thread 0x22b0 has exited with code -1073741510 (0xc000013a).
+The thread 0x82c has exited with code -1073741510 (0xc000013a).
+The thread 0x1db0 has exited with code -1073741510 (0xc000013a).
+The thread 0x1bc4 has exited with code -1073741510 (0xc000013a).
+DokanRemoveMountPoint t
+DokanControl recieved DeviceName:\Volume{d6cc17c5-1731-4085-bce7-964f1e9f5de9}
+send release
+The thread 0x1dcc has exited with code -1073741510 (0xc000013a).
+The thread 0x121c has exited with code -1073741510 (0xc000013a).
+The program '[7356] lofe.exe' has exited with code -1073741510 (0xc000013a).

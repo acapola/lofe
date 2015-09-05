@@ -1,0 +1,1784 @@
+'LOFE.EXE' (Win32): Loaded '\\SEB-WIN7\work\LOFE\WINDOWS\VS_EXPRESS2015\WIN32\DEBUG\LOFE.EXE'. Symbols loaded.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\ntdll.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\kernel32.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\KernelBase.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\user32.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\gdi32.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\lpk.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\usp10.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\msvcrt.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\advapi32.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\sechost.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\rpcrt4.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\sspicli.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\cryptbase.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded '\\SEB-WIN7\work\lofe\windows\vs_express2015\Win32\Debug\dokan.dll'. Symbols loaded.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\imm32.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\msctf.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Windows\SysWOW64\api-ms-win-core-synch-l1-2-0.dll'. Cannot find or open the PDB file.
+'LOFE.EXE' (Win32): Loaded 'C:\Program Files (x86)\AVG\AVG2015\avghookx.dll'. Cannot find or open the PDB file.
+RootDirectory: c:\tmp\public
+Dokan: debug mode on
+device opened
+mounted: t -> \Volume{d6cc17c5-1732-4085-bce7-964f1e9f5de9}
+###Create 0000
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\autorun.inf
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0001
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\AutoRun.inf
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0002
+###Create 0003
+OpenDirectory : c:\tmp\public\
+OpenDirectory : c:\tmp\public\
+
+CreateFile status = 0
+
+CreateFile status = 0
+###QueryVolumeInfo 0003
+###QueryVolumeInfo 0002
+###QueryVolumeInfo 0003
+###QueryVolumeInfo 0002
+###Cleanup 0003
+Cleanup: c:\tmp\public\
+
+###Cleanup 0002
+###Close 0003
+Cleanup: c:\tmp\public\
+
+Close: c:\tmp\public\
+
+###Close 0002
+Close: c:\tmp\public\
+
+###Create 0004
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100081
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###GetFileInfo 0004
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Create 0005
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x100081
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	SYNCHRONIZE
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###GetFileInfo 0005
+GetFileInfo : c:\tmp\public\
+	GetFileInformationByHandle success, file size = 0
+
+###Create 0006
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0007
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0008
+CreateDirectory : c:\tmp\public\FileSystemTest
+CreateFile status = 0
+###Cleanup 0008
+Cleanup: c:\tmp\public\FileSystemTest
+	invalid handle
+
+###Close 0008
+Close: c:\tmp\public\FileSystemTest
+
+###Create 0009
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0010
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0010
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15, offset 0, length 15
+	write 15, offset 0
+
+###Cleanup 0010
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+
+###Close 0010
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+
+###Create 0011
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0011
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+	GetFileInformationByHandle success, file size = 15
+
+###Cleanup 0011
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+
+###Close 0011
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+
+###Create 0012
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0012
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+	read 15, offset 0
+
+###Read 0012
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+	read 0, offset 15
+
+###Cleanup 0012
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+
+###Close 0012
+###Create 0013
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0013
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+	GetFileInformationByHandle success, file size = 15
+
+###Cleanup 0013
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+
+###Close 0013
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd15
+
+###Create 0014
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0015
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0015
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17, offset 0, length 17
+	write 17, offset 0
+
+###Cleanup 0015
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+
+###Close 0015
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+
+###Create 0016
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0016
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+	GetFileInformationByHandle success, file size = 17
+
+###Cleanup 0016
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+
+###Close 0016
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+
+###Create 0017
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0017
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+	read 17, offset 0
+
+###Read 0017
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+	read 0, offset 17
+
+###Cleanup 0017
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+
+###Close 0017
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+
+###Create 0018
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0018
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+	GetFileInformationByHandle success, file size = 17
+
+###Cleanup 0018
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+
+###Close 0018
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd17
+
+###Create 0019
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0020
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0020
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20, offset 0, length 20
+	write 20, offset 0
+
+###Cleanup 0020
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+
+###Close 0020
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+
+###Create 0021
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0021
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+	GetFileInformationByHandle success, file size = 20
+
+###Cleanup 0021
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+
+###Close 0021
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+
+###Create 0022
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0022
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+	read 20, offset 0
+
+###Read 0022
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+	read 0, offset 20
+
+###Cleanup 0022
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+
+###Close 0022
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+
+###Create 0023
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0023
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+	GetFileInformationByHandle success, file size = 20
+
+###Cleanup 0023
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+
+###Close 0023
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd20
+
+###Create 0024
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0025
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0025
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31, offset 0, length 31
+	write 31, offset 0
+
+###Cleanup 0025
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+
+###Close 0025
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+
+###Create 0026
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0026
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+	GetFileInformationByHandle success, file size = 31
+
+###Cleanup 0026
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+
+###Close 0026
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+
+###Create 0027
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0027
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+	read 31, offset 0
+
+###Read 0027
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+	read 0, offset 31
+
+###Cleanup 0027
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+
+###Close 0027
+###Create 0028
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0028
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+	GetFileInformationByHandle success, file size = 31
+
+###Cleanup 0028
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+
+###Close 0028
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd31
+
+###Create 0029
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0030
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0030
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33, offset 0, length 33
+	write 33, offset 0
+
+###Cleanup 0030
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+
+###Close 0030
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+
+###Create 0031
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0031
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+	GetFileInformationByHandle success, file size = 33
+
+###Cleanup 0031
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+
+###Close 0031
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+
+###Create 0032
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0032
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+	read 33, offset 0
+
+###Read 0032
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+	read 0, offset 33
+
+###Cleanup 0032
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+
+###Close 0032
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+
+###Create 0033
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0033
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+	GetFileInformationByHandle success, file size = 33
+
+###Cleanup 0033
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+
+###Close 0033
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedEnd33
+
+###Create 0034
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0035
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAligned
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0035
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryAligned, offset 0, length 16
+	write 16, offset 0
+
+###Cleanup 0035
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Close 0035
+Close: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Create 0036
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0036
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryAligned
+	GetFileInformationByHandle success, file size = 16
+
+###Cleanup 0036
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Close 0036
+Close: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Create 0037
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0037
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryAligned
+	read 16, offset 0
+
+###Read 0037
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryAligned
+	read 0, offset 16
+
+###Cleanup 0037
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Close 0037
+###Create 0038
+Close: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0038
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryAligned
+	GetFileInformationByHandle success, file size = 16
+
+###Cleanup 0038
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Close 0038
+Close: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Create 0039
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0039
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryAligned
+	GetFileInformationByHandle success, file size = 16
+
+###Cleanup 0039
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Close 0039
+Close: c:\tmp\public\FileSystemTest\testBinaryAligned
+
+###Create 0040
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0041
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0041
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned, offset 0, length 100
+	write 100, offset 0
+
+###Cleanup 0041
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0041
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Create 0042
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###WriteFile 0042
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned, offset 0, length 15
+	write 15, offset 0
+
+###Cleanup 0042
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0042
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Create 0043
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###WriteFile 0043
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned, offset 15, length 2
+	write 2, offset 15
+
+###Cleanup 0043
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0043
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Create 0044
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###WriteFile 0044
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned, offset 17, length 3
+	write 3, offset 17
+
+###Cleanup 0044
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0044
+###Create 0045
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###WriteFile 0045
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned, offset 20, length 11
+	write 11, offset 20
+
+###Cleanup 0045
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0045
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Create 0046
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###WriteFile 0046
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned, offset 31, length 2
+	write 2, offset 31
+
+###Cleanup 0046
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0046
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Create 0047
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0047
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+	GetFileInformationByHandle success, file size = 100
+
+###Cleanup 0047
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0047
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Create 0048
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0048
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+	read 100, offset 0
+
+###Read 0048
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+	read 0, offset 100
+
+###Cleanup 0048
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0048
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Create 0049
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0049
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnaligned
+	GetFileInformationByHandle success, file size = 100
+
+###Cleanup 0049
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Close 0049
+Close: c:\tmp\public\FileSystemTest\testBinaryUnaligned
+
+###Create 0050
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0051
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0051
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead, offset 0, length 100
+	write 100, offset 0
+
+###Cleanup 0051
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0051
+###Create 0052
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0052
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	read 15, offset 0
+
+###Cleanup 0052
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0052
+###Create 0053
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0053
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	read 2, offset 15
+
+###Cleanup 0053
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0053
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Create 0054
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0054
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	read 3, offset 17
+
+###Cleanup 0054
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0054
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Create 0055
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0055
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	read 11, offset 20
+
+###Cleanup 0055
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0055
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Create 0056
+   CreateDisposition 0x00000003
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x12019f
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0056
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	read 2, offset 31
+
+###Cleanup 0056
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0056
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Create 0057
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0057
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	GetFileInformationByHandle success, file size = 100
+
+###Cleanup 0057
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0057
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Create 0058
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0058
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	read 100, offset 0
+
+###Read 0058
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	read 0, offset 100
+
+###Cleanup 0058
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0058
+###Create 0059
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0059
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+	GetFileInformationByHandle success, file size = 100
+
+###Cleanup 0059
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Close 0059
+Close: c:\tmp\public\FileSystemTest\testBinaryUnalignedRead
+
+###Create 0060
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x2000000
+	FILE_FLAG_BACKUP_SEMANTICS
+	error code = 2
+
+CreateFile status = -2
+###Create 0061
+   CreateDisposition 0x00000005
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+  AccountName: seb, DomainName: seb-win7
+	CREATE_ALWAYS
+	ShareMode = 0x3
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	AccessMode = 0x120196
+	FILE_READ_ATTRIBUTES
+	READ_CONTROL
+	FILE_WRITE_DATA
+	FILE_WRITE_ATTRIBUTES
+	FILE_WRITE_EA
+	FILE_APPEND_DATA
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x2000080
+	FILE_ATTRIBUTE_NORMAL
+	FILE_FLAG_BACKUP_SEMANTICS
+
+CreateFile status = 0
+###WriteFile 0061
+WriteFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock, offset 0, length 13
+	write 13, offset 0
+
+###Cleanup 0061
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Close 0061
+Close: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Create 0062
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0062
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+	GetFileInformationByHandle success, file size = 13
+
+###Cleanup 0062
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Close 0062
+Close: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Create 0063
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x120089
+	FILE_READ_DATA
+	FILE_READ_ATTRIBUTES
+	FILE_READ_EA
+	READ_CONTROL
+	SYNCHRONIZE
+	STANDARD_RIGHTS_READ
+	STANDARD_RIGHTS_WRITE
+	STANDARD_RIGHTS_EXECUTE
+	FlagsAndAttributes = 0x80
+	FILE_ATTRIBUTE_NORMAL
+
+CreateFile status = 0
+###Read 0063
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+	read 13, offset 0
+
+###Read 0063
+ReadFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+	read 0, offset 13
+
+###Cleanup 0063
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Close 0063
+Close: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Create 0064
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0064
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+	GetFileInformationByHandle success, file size = 13
+
+###Cleanup 0064
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Close 0064
+Close: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Create 0065
+   CreateDisposition 0x00000001
+CreateFile : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+  AccountName: seb, DomainName: seb-win7
+	OPEN_EXISTING
+	ShareMode = 0x7
+	FILE_SHARE_READ
+	FILE_SHARE_WRITE
+	FILE_SHARE_DELETE
+	AccessMode = 0x80
+	FILE_READ_ATTRIBUTES
+	FlagsAndAttributes = 0x0
+
+CreateFile status = 0
+###GetFileInfo 0065
+GetFileInfo : c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+	GetFileInformationByHandle success, file size = 13
+
+###Cleanup 0065
+Cleanup: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+###Close 0065
+Close: c:\tmp\public\FileSystemTest\testBinaryAlignedSubBlock
+
+Exception thrown at 0x761A7367 (kernel32.dll) in LOFE.EXE: 0x40010005: Control-C.
+
+The thread 0x28f0 has exited with code -1073741510 (0xc000013a).
+The thread 0x28ec has exited with code -1073741510 (0xc000013a).
+The thread 0x162c has exited with code -1073741510 (0xc000013a).
+The thread 0x20f0 has exited with code -1073741510 (0xc000013a).
+The thread 0x26a8 has exited with code -1073741510 (0xc000013a).
+The thread 0x28e8 has exited with code -1073741510 (0xc000013a).
+The thread 0x2568 has exited with code -1073741510 (0xc000013a).
+The thread 0x2610 has exited with code -1073741510 (0xc000013a).
+The thread 0x2728 has exited with code -1073741510 (0xc000013a).
+The thread 0x1930 has exited with code -1073741510 (0xc000013a).
+The thread 0x2210 has exited with code -1073741510 (0xc000013a).
+DokanRemoveMountPoint t
+DokanControl recieved DeviceName:\Volume{d6cc17c5-1732-4085-bce7-964f1e9f5de9}
+send release
+The program '[4620] lofe.exe' has exited with code -1073741510 (0xc000013a).

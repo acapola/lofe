@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=sebastien riou
-Date                   :=09/03/15
+Date                   :=09/05/15
 CodeLitePath           :="/home/seb/.codelite"
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -36,7 +36,7 @@ ObjectsFileList        :="lofe.txt"
 PCHCompileFlags        :=
 MakeDirCommand         :=mkdir -p
 LinkOptions            :=  
-IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)../../x86 $(IncludeSwitch)../../generic 
+IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)../../x86 $(IncludeSwitch)../../generic $(IncludeSwitch)../ 
 IncludePCH             := 
 RcIncludePath          := 
 Libs                   := $(LibrarySwitch)fuse 
@@ -60,7 +60,7 @@ AS       := /usr/bin/as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/x86_aes-ni.c$(ObjectSuffix) $(IntermediateDirectory)/linux_lofe_vfs.c$(ObjectSuffix) $(IntermediateDirectory)/generic_lofe.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/x86_aes-ni.c$(ObjectSuffix) $(IntermediateDirectory)/linux_lofe_vfs.c$(ObjectSuffix) $(IntermediateDirectory)/generic_lofe.cpp$(ObjectSuffix) $(IntermediateDirectory)/generic_utils.c$(ObjectSuffix) 
 
 
 
@@ -114,6 +114,14 @@ $(IntermediateDirectory)/generic_lofe.cpp$(DependSuffix): ../../generic/lofe.cpp
 
 $(IntermediateDirectory)/generic_lofe.cpp$(PreprocessSuffix): ../../generic/lofe.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/generic_lofe.cpp$(PreprocessSuffix) "../../generic/lofe.cpp"
+
+$(IntermediateDirectory)/generic_utils.c$(ObjectSuffix): ../../generic/utils.c $(IntermediateDirectory)/generic_utils.c$(DependSuffix)
+	$(CC) $(SourceSwitch) "/home/seb/lofe/generic/utils.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/generic_utils.c$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/generic_utils.c$(DependSuffix): ../../generic/utils.c
+	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/generic_utils.c$(ObjectSuffix) -MF$(IntermediateDirectory)/generic_utils.c$(DependSuffix) -MM "../../generic/utils.c"
+
+$(IntermediateDirectory)/generic_utils.c$(PreprocessSuffix): ../../generic/utils.c
+	@$(CC) $(CFLAGS) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/generic_utils.c$(PreprocessSuffix) "../../generic/utils.c"
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)

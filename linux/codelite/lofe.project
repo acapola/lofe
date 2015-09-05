@@ -23,6 +23,7 @@
     <File Name="../../x86/aes-ni.c"/>
     <File Name="../lofe_vfs.c"/>
     <File Name="../../generic/lofe.cpp"/>
+    <File Name="../../generic/utils.c"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -39,6 +40,7 @@
         <IncludePath Value="."/>
         <IncludePath Value="../../x86"/>
         <IncludePath Value="../../generic"/>
+        <IncludePath Value="../"/>
         <Preprocessor Value="_FILE_OFFSET_BITS=64"/>
       </Compiler>
       <Linker Options="" Required="yes">

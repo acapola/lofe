@@ -8,10 +8,24 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 public class FileSystemTest {
-
+    public static final class OsUtils
+    {
+        private static String OS = null;
+        public static String getOsName()
+        {
+            if(OS == null) { OS = System.getProperty("os.name"); }
+            return OS;
+        }
+        public static boolean isWindows(){
+            return getOsName().startsWith("Windows");
+        }
+ // and so on
+    }
     static File base;
     static {
-        String baseDir = "/home/seb/tmp/myfs";
+        String baseDir;
+        if(OsUtils.isWindows()) baseDir = "t:\\";
+        else baseDir = "/home/seb/tmp/myfs";
         base=new File(baseDir,"FileSystemTest");
         if(base.exists())
             deleteDirectory(base);
