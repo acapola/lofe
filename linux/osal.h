@@ -5,4 +5,6 @@
 //defines for linux
 
 
+typedef int lofe_file_handle_t;
+
 #endif //__OSAL_H__

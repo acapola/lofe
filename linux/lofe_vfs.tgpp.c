@@ -98,6 +98,14 @@ static int write_header(int fd, uint64_t len){
 	return 0;
 }
 
+int lofe_read_header(lofe_file_handle_t fd, lofe_header_t *header){
+	int res;
+	res = pread(fd, header, sizeof(lofe_header_t), 0);
+	if (res == -1)
+		return -errno;	
+	return 0;
+}
+
 static int read_header2(const char *native_path, lofe_header_t *header){
 	int fd;
 	int res;
@@ -148,7 +156,7 @@ static int update_header_len2(const char *native_path, uint64_t len){
 	return 0;
 }
 
-static int lofe_read_block(int fd, int8_t*buf, off_t offset, const lofe_header_t * const header){
+int lofe_read_block(int fd, int8_t*buf, off_t offset, const lofe_header_t * const header){
 	int8_t enc_buf[BLOCK_SIZE];
 	if(offset%BLOCK_SIZE) {
 		printf("ERROR: lofe_read_block, unaligned offset: %X\n",offset);
@@ -166,7 +174,7 @@ static int lofe_read_block(int fd, int8_t*buf, off_t offset, const lofe_header_t
 	return BLOCK_SIZE;
 }
 
-static int lofe_write_block(int fd, const int8_t * const buf, off_t offset, const lofe_header_t * const header){
+int lofe_write_block(int fd, const int8_t * const buf, off_t offset, const lofe_header_t * const header){
 	int8_t enc_buf[BLOCK_SIZE];
 	if(offset%BLOCK_SIZE) {
 		printf("ERROR: lofe_write_block, unaligned offset: %X\n",offset);
@@ -386,6 +394,7 @@ static int xmp_open(const char *path, struct fuse_file_info *fi){
 	close(fd);
 	return res;
 }
+
 static int xmp_read(
 			const char *path, 
 			char *buf, 
@@ -395,97 +404,15 @@ static int xmp_read(
 	`logStr xmp_read`
 	int fd;
 	int res;
-	size_t aligned_size;
-	off_t aligned_offset;
-	size_t read_offset;
 	size_t read_size;
-	lofe_header_t header;
-	size_t n_blocks;
-	size_t regular_blocks;
-	size_t block;
-	size_t last_block_unaligned_size;
-	off_t content_end_read_pos;
-	(void) fi;
+	//(void) fi;
 	`fixPath`
     fd = open(path, O_RDONLY);
 	if (fd == -1)
 		return -errno;
-	
-	//get the current size of the content, store it in header.content_len
-	res = pread(fd, &header, sizeof(lofe_header_t), 0);
-	if (res == -1){
-		close(fd);
-		return -errno;
-	}
-	
-	//Check EOF condition
-	if(offset>=header.content_len){
-		close(fd);
-		return 0;
-	}
-	
-	//adjust the size so that we don't read out of the actual content (that can happen due to padding)
-	read_size = size;
-	if(offset+size>header.content_len){
-		read_size = header.content_len-offset;
-	}
-	
-	content_end_read_pos = offset + read_size;
-	align_size_offset(read_size,offset,&aligned_size,&aligned_offset);
-	read_offset = aligned_offset+sizeof(lofe_header_t);
-	n_blocks = aligned_size / BLOCK_SIZE;
-	regular_blocks = n_blocks;
-	last_block_unaligned_size = content_end_read_pos % BLOCK_SIZE;
-	
-	if(last_block_unaligned_size) 
-		regular_blocks--;//remove the last block from the count of regular blocks
-
-	//process initial block if it is not aligned, otherwise it is treated as a regular block
-	if(aligned_offset!=offset){
-		off_t unaligned_offset = offset-aligned_offset;
-		off_t unaligned_size = BLOCK_SIZE-read_size;
-		int8_t aligned_buf[BLOCK_SIZE];
-	
-		//read unaligned data
-		res=lofe_read_block(fd, aligned_buf, read_offset, &header);
-		if (res <= 0){//should not get EOF here
-			close(fd);
-			return -errno;
-		}
-			
-		//copy to output buffer
-		memcpy(buf,aligned_buf+unaligned_offset,unaligned_size);
-		read_offset+=BLOCK_SIZE;
-		buf+=unaligned_offset;
-	}
-	
-	//process regular blocks
-	for(block=0;block<regular_blocks;block++){
-		res=lofe_read_block(fd, buf, read_offset, &header);
-		if (res <= 0){//should not get EOF here
-			close(fd);
-			return -errno;
-		}	
-		read_offset+=BLOCK_SIZE;
-		buf+=BLOCK_SIZE;
-	}
-	
-	//process final block if it is not aligned, otherwise it was treated as a regular block
-	if(last_block_unaligned_size){
-		int8_t aligned_buf[BLOCK_SIZE];
-		
-		//read end of the block from file
-		res=lofe_read_block(fd, aligned_buf, read_offset, &header);
-		if (res <= 0){//should not get EOF here
-			close(fd);
-			return -errno;
-		}
-		
-		//copy to output buffer
-		memcpy(buf,aligned_buf,last_block_unaligned_size);
-	}
+	read_size = lofe_read(fd,buf,size,offset);
 	close(fd);
-	
+	if(read_size==-1) return -errno;
 	return read_size;
 }
 

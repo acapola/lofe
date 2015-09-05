@@ -11,6 +11,44 @@
 
 #include "lofe_internals.h"
 
+
+
+BOOL g_UseStdErr;
+BOOL g_DebugMode;
+
+static void DbgPrint(LPCWSTR format, ...)
+{
+	if (g_DebugMode) {
+		WCHAR buffer[512];
+		va_list argp;
+		va_start(argp, format);
+		vswprintf_s(buffer, sizeof(buffer) / sizeof(WCHAR), format, argp);
+		va_end(argp);
+		if (g_UseStdErr) {
+			fwprintf(stderr, buffer);
+		}
+		else {
+			OutputDebugStringW(buffer);
+		}
+	}
+}
+
+static WCHAR RootDirectory[MAX_PATH] = L"C:";
+static WCHAR MountPoint[MAX_PATH] = L"M:";
+
+
+static void
+GetFilePath(
+	PWCHAR	filePath,
+	ULONG	numberOfElements,
+	LPCWSTR FileName)
+{
+	RtlZeroMemory(filePath, numberOfElements * sizeof(WCHAR));
+	wcsncpy_s(filePath, numberOfElements, RootDirectory, wcslen(RootDirectory));
+	wcsncat_s(filePath, numberOfElements, FileName, wcslen(FileName));
+}
+
+
 static int write_header(HANDLE handle, uint64_t len) {
 	lofe_header_t header;
 	header.info = 0;
@@ -25,15 +63,15 @@ static int write_header(HANDLE handle, uint64_t len) {
 	return 0;
 }
 
-static int read_header(HANDLE handle, lofe_header_t *header) {
+int lofe_read_header(lofe_file_handle_t h, lofe_header_t *header) {
 	LARGE_INTEGER distanceToMove;
 	DWORD ReadLength;
 	distanceToMove.QuadPart = 0;
-	if (!SetFilePointerEx(handle, distanceToMove, NULL, FILE_BEGIN)) {
+	if (!SetFilePointerEx(h, distanceToMove, NULL, FILE_BEGIN)) {
 		return -1;
 	}
 
-	if (!ReadFile(handle, header, sizeof(lofe_header_t), &ReadLength, NULL)) {
+	if (!ReadFile(h, header, sizeof(lofe_header_t), &ReadLength, NULL)) {
 		return -1;
 	}
 
@@ -63,38 +101,76 @@ static int read_header2(LPCWSTR native_path, lofe_header_t *header) {
 	return 0;
 }
 
-BOOL g_UseStdErr;
-BOOL g_DebugMode;
 
-static void DbgPrint(LPCWSTR format, ...)
-{
-	if (g_DebugMode) {
-		WCHAR buffer[512];
-		va_list argp;
-		va_start(argp, format);
-		vswprintf_s(buffer, sizeof(buffer)/sizeof(WCHAR), format, argp);
-		va_end(argp);
-		if (g_UseStdErr) {
-			fwprintf(stderr, buffer);
-		} else {
-			OutputDebugStringW(buffer);
+static int isRealFile(DWORD dwFileAttributes) {
+	if (dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) return 0;
+	if (dwFileAttributes & FILE_ATTRIBUTE_DEVICE) return 0;
+	if (dwFileAttributes & FILE_ATTRIBUTE_VIRTUAL) return 0;
+	//we have a real file
+	return 1;
+}
+
+
+static int fixFileSize(WIN32_FIND_DATAW *findData) {
+	lofe_header_t header;
+
+	if (isRealFile(findData->dwFileAttributes)) {
+		WCHAR				filePath[MAX_PATH];
+		GetFilePath(filePath, MAX_PATH, L"\\");
+		wcscat_s(filePath, MAX_PATH, findData->cFileName);
+
+		DbgPrint(L"\tread_header2\n");
+		if (0 != read_header2(filePath, &header)) {
+			DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
+			return -1;
 		}
+		findData->nFileSizeHigh = (uint32_t)(header.content_len >> 32);
+		findData->nFileSizeLow = (uint32_t)header.content_len;
 	}
+	return 0;
 }
 
-static WCHAR RootDirectory[MAX_PATH] = L"C:";
-static WCHAR MountPoint[MAX_PATH] = L"M:";
+static int fixFileSize2(LPCWSTR	filePath, LPBY_HANDLE_FILE_INFORMATION findData) {
+	lofe_header_t header;
 
-static void
-GetFilePath(
-	PWCHAR	filePath,
-	ULONG	numberOfElements,
-	LPCWSTR FileName)
-{
-	RtlZeroMemory(filePath, numberOfElements * sizeof(WCHAR));
-	wcsncpy_s(filePath, numberOfElements, RootDirectory, wcslen(RootDirectory));
-	wcsncat_s(filePath, numberOfElements, FileName, wcslen(FileName));
+	if (isRealFile(findData->dwFileAttributes)) {
+		DbgPrint(L"\tread_header2\n");
+		if (0 != read_header2(filePath, &header)) {
+			DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
+			return -1;
+		}
+		findData->nFileSizeHigh = header.content_len >> 32;
+		findData->nFileSizeLow = header.content_len;
+	}
+	return 0;
 }
+
+
+int lofe_read_block(lofe_file_handle_t h, int8_t*buf, off_t offset, const lofe_header_t * const header) {
+	DWORD ReadLength;
+	int8_t enc_buf[BLOCK_SIZE];
+	if (offset%BLOCK_SIZE) {
+		printf("ERROR: lofe_read_block, unaligned offset: %X\n", offset);
+		return -EINVAL;
+	}
+	if (!ReadFile(h, buf, BLOCK_SIZE, &ReadLength, NULL)) {
+		DbgPrint(L"\tlofe_read_block error = %u, buffer length = %d, read length = %d\n\n",
+			GetLastError(), BLOCK_SIZE, ReadLength);
+		return -1;
+
+	}
+	else {
+		DbgPrint(L"\tlofe_read_block %d, offset %d\n\n", ReadLength, offset);
+	}
+	if (ReadLength != BLOCK_SIZE) {
+		printf("ERROR: lofe_read_block, could not read all the requested bytes\n");
+		return -EIO;
+	}
+	//lofe_decrypt_block(buf, enc_buf, header->iv, offset);
+	return BLOCK_SIZE;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 static void
@@ -259,138 +335,6 @@ LofeCreateFile(
 	return 0;
 }
 
-
-static int DOKAN_CALLBACK
-LofeCreateDirectory(
-	LPCWSTR					FileName,
-	PDOKAN_FILE_INFO		DokanFileInfo)
-{
-    UNREFERENCED_PARAMETER(DokanFileInfo);
-
-	WCHAR filePath[MAX_PATH];
-	GetFilePath(filePath, MAX_PATH, FileName);
-
-	DbgPrint(L"CreateDirectory : %s\n", filePath);
-	if (!CreateDirectory(filePath, NULL)) {
-		DWORD error = GetLastError();
-		DbgPrint(L"\terror code = %d\n\n", error);
-		return error * -1; // error codes are negated value of Windows System Error codes
-	}
-	return 0;
-}
-
-
-static int DOKAN_CALLBACK
-LofeOpenDirectory(
-	LPCWSTR					FileName,
-	PDOKAN_FILE_INFO		DokanFileInfo)
-{
-	WCHAR filePath[MAX_PATH];
-	HANDLE handle;
-	DWORD attr;
-
-	GetFilePath(filePath, MAX_PATH, FileName);
-
-	DbgPrint(L"OpenDirectory : %s\n", filePath);
-
-	attr = GetFileAttributes(filePath);
-	if (attr == INVALID_FILE_ATTRIBUTES) {
-		DWORD error = GetLastError();
-		DbgPrint(L"\terror code = %d\n\n", error);
-		return error * -1;
-	}
-	if (!(attr & FILE_ATTRIBUTE_DIRECTORY)) {
-		return -1;
-	}
-
-	handle = CreateFile(
-		filePath,
-		0,
-		FILE_SHARE_READ|FILE_SHARE_WRITE,
-		NULL,
-		OPEN_EXISTING,
-		FILE_FLAG_BACKUP_SEMANTICS,
-		NULL);
-
-	if (handle == INVALID_HANDLE_VALUE) {
-		DWORD error = GetLastError();
-		DbgPrint(L"\terror code = %d\n\n", error);
-		return error * -1;
-	}
-
-	DbgPrint(L"\n");
-
-	DokanFileInfo->Context = (ULONG64)handle;
-
-	return 0;
-}
-
-
-static int DOKAN_CALLBACK
-LofeCloseFile(
-	LPCWSTR					FileName,
-	PDOKAN_FILE_INFO		DokanFileInfo)
-{
-	WCHAR filePath[MAX_PATH];
-	GetFilePath(filePath, MAX_PATH, FileName);
-
-	if (DokanFileInfo->Context) {
-		DbgPrint(L"CloseFile: %s\n", filePath);
-		DbgPrint(L"\terror : not cleanuped file\n\n");
-		CloseHandle((HANDLE)DokanFileInfo->Context);
-		DokanFileInfo->Context = 0;
-	} else {
-		//DbgPrint(L"Close: %s\n\tinvalid handle\n\n", filePath);
-		DbgPrint(L"Close: %s\n\n", filePath);
-		return 0;
-	}
-
-	//DbgPrint(L"\n");
-	return 0;
-}
-
-
-static int DOKAN_CALLBACK
-LofeCleanup(
-	LPCWSTR					FileName,
-	PDOKAN_FILE_INFO		DokanFileInfo)
-{
-	WCHAR filePath[MAX_PATH];
-	GetFilePath(filePath, MAX_PATH, FileName);
-
-	if (DokanFileInfo->Context) {
-		DbgPrint(L"Cleanup: %s\n\n", filePath);
-		CloseHandle((HANDLE)DokanFileInfo->Context);
-		DokanFileInfo->Context = 0;
-
-		if (DokanFileInfo->DeleteOnClose) {
-			DbgPrint(L"\tDeleteOnClose\n");
-			if (DokanFileInfo->IsDirectory) {
-				DbgPrint(L"  DeleteDirectory ");
-				if (!RemoveDirectory(filePath)) {
-					DbgPrint(L"error code = %d\n\n", GetLastError());
-				} else {
-					DbgPrint(L"success\n\n");
-				}
-			} else {
-				DbgPrint(L"  DeleteFile ");
-				if (DeleteFile(filePath) == 0) {
-					DbgPrint(L" error code = %d\n\n", GetLastError());
-				} else {
-					DbgPrint(L"success\n\n");
-				}
-			}
-		}
-
-	} else {
-		DbgPrint(L"Cleanup: %s\n\tinvalid handle\n\n", filePath);
-		return -1;
-	}
-
-	return 0;
-}
-
-
 static int DOKAN_CALLBACK
 LofeReadFile(
 	LPCWSTR				FileName,
@@ -426,18 +370,9 @@ LofeReadFile(
 		opened = TRUE;
 	}
 	
-    LARGE_INTEGER distanceToMove;
-    distanceToMove.QuadPart = Offset;
-    if (!SetFilePointerEx(handle, distanceToMove, NULL, FILE_BEGIN)) {
-		DbgPrint(L"\tseek error, offset = %d\n\n", offset);
-		if (opened)
-			CloseHandle(handle);
-		return -1;
-	}
-
-		
-	if (!ReadFile(handle, Buffer, BufferLength, ReadLength,NULL)) {
-		DbgPrint(L"\tread error = %u, buffer length = %d, read length = %d\n\n",
+	*ReadLength = lofe_read(handle, Buffer, BufferLength, Offset);
+	if (-1==*ReadLength) {
+		DbgPrint(L"\tread error = %u, buffer length = %d, ReadLength %d\n\n",
 			GetLastError(), BufferLength, *ReadLength);
 		if (opened)
 			CloseHandle(handle);
@@ -524,75 +459,6 @@ LofeWriteFile(
 }
 
 
-static int DOKAN_CALLBACK
-LofeFlushFileBuffers(
-	LPCWSTR		FileName,
-	PDOKAN_FILE_INFO	DokanFileInfo)
-{
-	WCHAR	filePath[MAX_PATH];
-	HANDLE	handle = (HANDLE)DokanFileInfo->Context;
-
-	GetFilePath(filePath, MAX_PATH, FileName);
-
-	DbgPrint(L"FlushFileBuffers : %s\n", filePath);
-
-	if (!handle || handle == INVALID_HANDLE_VALUE) {
-		DbgPrint(L"\tinvalid handle\n\n");
-		return 0;
-	}
-
-	if (FlushFileBuffers(handle)) {
-		return 0;
-	} else {
-		DbgPrint(L"\tflush error code = %d\n", GetLastError());
-		return -1;
-	}
-
-}
-
-
-static int isRealFile(DWORD dwFileAttributes) {
-	if (dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) return 0;
-	if (dwFileAttributes & FILE_ATTRIBUTE_DEVICE) return 0;
-	if (dwFileAttributes & FILE_ATTRIBUTE_VIRTUAL) return 0;
-	//we have a real file
-	return 1;
-}
-
-
-static int fixFileSize(WIN32_FIND_DATAW *findData) {
-	lofe_header_t header;
-
-	if (isRealFile(findData->dwFileAttributes)) {
-		WCHAR				filePath[MAX_PATH];
-		GetFilePath(filePath, MAX_PATH, L"\\");
-		wcscat_s(filePath, MAX_PATH, findData->cFileName);
-
-		DbgPrint(L"\tread_header2\n");
-		if (0 != read_header2(filePath, &header)) {
-			DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
-			return -1;
-		}
-		findData->nFileSizeHigh = header.content_len >> 32;
-		findData->nFileSizeLow = header.content_len;
-	}
-	return 0;
-}
-
-static int fixFileSize2(LPCWSTR	filePath,LPBY_HANDLE_FILE_INFORMATION findData) {
-	lofe_header_t header;
-
-	if (isRealFile(findData->dwFileAttributes)) {
-		DbgPrint(L"\tread_header2\n");
-		if (0 != read_header2(filePath, &header)) {
-			DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
-			return -1;
-		}
-		findData->nFileSizeHigh = header.content_len >> 32;
-		findData->nFileSizeLow = header.content_len;
-	}
-	return 0;
-}
 
 static int DOKAN_CALLBACK
 LofeGetFileInformation(
@@ -649,17 +515,7 @@ LofeGetFileInformation(
 		}
 	} else {
 		DbgPrint(L"\tHandleFileInformation->dwFileAttributes = 0x%08X\n", HandleFileInformation->dwFileAttributes);
-		if (isRealFile(HandleFileInformation->dwFileAttributes)) { //we have a real file
-			lofe_header_t header;
-			DbgPrint(L"\tread_header\n");
-
-			if (0 != read_header(handle, &header)) {
-				DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
-				return -1;
-			}
-			HandleFileInformation->nFileSizeHigh = header.content_len >> 32;
-			HandleFileInformation->nFileSizeLow = header.content_len;
-		}
+		fixFileSize2(filePath, HandleFileInformation);
 		DbgPrint(L"\tGetFileInformationByHandle success, file size = %d\n",
 			HandleFileInformation->nFileSizeLow);
 	}
@@ -720,6 +576,172 @@ LofeFindFiles(
 
 	return 0;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+static int DOKAN_CALLBACK
+LofeCreateDirectory(
+	LPCWSTR					FileName,
+	PDOKAN_FILE_INFO		DokanFileInfo)
+{
+	UNREFERENCED_PARAMETER(DokanFileInfo);
+
+	WCHAR filePath[MAX_PATH];
+	GetFilePath(filePath, MAX_PATH, FileName);
+
+	DbgPrint(L"CreateDirectory : %s\n", filePath);
+	if (!CreateDirectory(filePath, NULL)) {
+		DWORD error = GetLastError();
+		DbgPrint(L"\terror code = %d\n\n", error);
+		return error * -1; // error codes are negated value of Windows System Error codes
+	}
+	return 0;
+}
+
+
+static int DOKAN_CALLBACK
+LofeOpenDirectory(
+	LPCWSTR					FileName,
+	PDOKAN_FILE_INFO		DokanFileInfo)
+{
+	WCHAR filePath[MAX_PATH];
+	HANDLE handle;
+	DWORD attr;
+
+	GetFilePath(filePath, MAX_PATH, FileName);
+
+	DbgPrint(L"OpenDirectory : %s\n", filePath);
+
+	attr = GetFileAttributes(filePath);
+	if (attr == INVALID_FILE_ATTRIBUTES) {
+		DWORD error = GetLastError();
+		DbgPrint(L"\terror code = %d\n\n", error);
+		return error * -1;
+	}
+	if (!(attr & FILE_ATTRIBUTE_DIRECTORY)) {
+		return -1;
+	}
+
+	handle = CreateFile(
+		filePath,
+		0,
+		FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL,
+		OPEN_EXISTING,
+		FILE_FLAG_BACKUP_SEMANTICS,
+		NULL);
+
+	if (handle == INVALID_HANDLE_VALUE) {
+		DWORD error = GetLastError();
+		DbgPrint(L"\terror code = %d\n\n", error);
+		return error * -1;
+	}
+
+	DbgPrint(L"\n");
+
+	DokanFileInfo->Context = (ULONG64)handle;
+
+	return 0;
+}
+
+
+static int DOKAN_CALLBACK
+LofeCloseFile(
+	LPCWSTR					FileName,
+	PDOKAN_FILE_INFO		DokanFileInfo)
+{
+	WCHAR filePath[MAX_PATH];
+	GetFilePath(filePath, MAX_PATH, FileName);
+
+	if (DokanFileInfo->Context) {
+		DbgPrint(L"CloseFile: %s\n", filePath);
+		DbgPrint(L"\terror : not cleanuped file\n\n");
+		CloseHandle((HANDLE)DokanFileInfo->Context);
+		DokanFileInfo->Context = 0;
+	}
+	else {
+		//DbgPrint(L"Close: %s\n\tinvalid handle\n\n", filePath);
+		DbgPrint(L"Close: %s\n\n", filePath);
+		return 0;
+	}
+
+	//DbgPrint(L"\n");
+	return 0;
+}
+
+
+static int DOKAN_CALLBACK
+LofeCleanup(
+	LPCWSTR					FileName,
+	PDOKAN_FILE_INFO		DokanFileInfo)
+{
+	WCHAR filePath[MAX_PATH];
+	GetFilePath(filePath, MAX_PATH, FileName);
+
+	if (DokanFileInfo->Context) {
+		DbgPrint(L"Cleanup: %s\n\n", filePath);
+		CloseHandle((HANDLE)DokanFileInfo->Context);
+		DokanFileInfo->Context = 0;
+
+		if (DokanFileInfo->DeleteOnClose) {
+			DbgPrint(L"\tDeleteOnClose\n");
+			if (DokanFileInfo->IsDirectory) {
+				DbgPrint(L"  DeleteDirectory ");
+				if (!RemoveDirectory(filePath)) {
+					DbgPrint(L"error code = %d\n\n", GetLastError());
+				}
+				else {
+					DbgPrint(L"success\n\n");
+				}
+			}
+			else {
+				DbgPrint(L"  DeleteFile ");
+				if (DeleteFile(filePath) == 0) {
+					DbgPrint(L" error code = %d\n\n", GetLastError());
+				}
+				else {
+					DbgPrint(L"success\n\n");
+				}
+			}
+		}
+
+	}
+	else {
+		DbgPrint(L"Cleanup: %s\n\tinvalid handle\n\n", filePath);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int DOKAN_CALLBACK
+LofeFlushFileBuffers(
+	LPCWSTR		FileName,
+	PDOKAN_FILE_INFO	DokanFileInfo)
+{
+	WCHAR	filePath[MAX_PATH];
+	HANDLE	handle = (HANDLE)DokanFileInfo->Context;
+
+	GetFilePath(filePath, MAX_PATH, FileName);
+
+	DbgPrint(L"FlushFileBuffers : %s\n", filePath);
+
+	if (!handle || handle == INVALID_HANDLE_VALUE) {
+		DbgPrint(L"\tinvalid handle\n\n");
+		return 0;
+	}
+
+	if (FlushFileBuffers(handle)) {
+		return 0;
+	}
+	else {
+		DbgPrint(L"\tflush error code = %d\n", GetLastError());
+		return -1;
+	}
+
+}
+
 
 
 static int DOKAN_CALLBACK

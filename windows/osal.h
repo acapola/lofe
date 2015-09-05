@@ -8,6 +8,7 @@
 //typedef LONGLONG off_t;
 //typedef LONGLONG size_t;
 
-typedef size_t off_t;
+typedef LONGLONG off_t;
+typedef HANDLE lofe_file_handle_t;
 
 #endif //__OSAL_H__

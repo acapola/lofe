@@ -18,15 +18,21 @@ typedef struct lofe_header_struct_t {
 
 #define BLOCK_SIZE 16
 
-off_t align_start(off_t offset);
-off_t align_end(off_t offset);
-void align_size_offset(size_t size, off_t offset, size_t *aligned_size, off_t *aligned_offset);
 
+//crypto
 void lofe_load_key(int8_t *key,int8_t *key_tweak);
 void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset);
 void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset);
 
+//file helpers
+off_t align_start(off_t offset);
+off_t align_end(off_t offset);
+void align_size_offset(size_t size, off_t offset, size_t *aligned_size, off_t *aligned_offset);
+int lofe_read_header(lofe_file_handle_t fd, lofe_header_t *header);
+int lofe_read_block(lofe_file_handle_t h, int8_t*buf, off_t offset, const lofe_header_t * const header);
 
+//high level functions
+int lofe_read(lofe_file_handle_t h, int8_t *buf, size_t size, off_t offset);
 int lofe_start_vfs(char *encrypted_files_path, char *mount_point);
 
 #ifdef __cplusplus
