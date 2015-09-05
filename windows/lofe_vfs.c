@@ -9,6 +9,60 @@
 #include "dokan/dokan.h"
 #include "dokan/fileinfo.h"
 
+#include "lofe_internals.h"
+
+static int write_header(HANDLE handle, uint64_t len) {
+	lofe_header_t header;
+	header.info = 0;
+	header.iv[0] = 0x0123456789ABCDEF;
+	header.iv[1] = 0x1122334455667788;
+	//get_random(header.iv, sizeof(header.iv));
+	header.content_len = len;
+	DWORD NumberOfBytesWritten;
+	if (!WriteFile(handle, &header, sizeof(header), &NumberOfBytesWritten, NULL)) {
+		return -1;
+	}
+	return 0;
+}
+
+static int read_header(HANDLE handle, lofe_header_t *header) {
+	LARGE_INTEGER distanceToMove;
+	DWORD ReadLength;
+	distanceToMove.QuadPart = 0;
+	if (!SetFilePointerEx(handle, distanceToMove, NULL, FILE_BEGIN)) {
+		return -1;
+	}
+
+	if (!ReadFile(handle, header, sizeof(lofe_header_t), &ReadLength, NULL)) {
+		return -1;
+	}
+
+	return 0;
+}
+
+static int read_header2(LPCWSTR native_path, lofe_header_t *header) {
+	DWORD ReadLength;
+
+	HANDLE handle = CreateFile(
+		native_path,
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		NULL,
+		OPEN_EXISTING,
+		0,
+		NULL);
+	if (handle == INVALID_HANDLE_VALUE) {
+		return -1;
+	}
+	
+	if (!ReadFile(handle, header, sizeof(lofe_header_t), &ReadLength, NULL)) {
+		return -1;
+	}
+
+	CloseHandle(handle);
+	return 0;
+}
+
 BOOL g_UseStdErr;
 BOOL g_DebugMode;
 
@@ -80,10 +134,10 @@ PrintUserName(PDOKAN_FILE_INFO	DokanFileInfo)
 	DbgPrint(L"  AccountName: %s, DomainName: %s\n", accountName, domainName);
 }
 
-#define MirrorCheckFlag(val, flag) if (val&flag) { DbgPrint(L"\t" L#flag L"\n"); }
+#define LofeCheckFlag(val, flag) if (val&flag) { DbgPrint(L"\t" L#flag L"\n"); }
 
 static int DOKAN_CALLBACK
-MirrorCreateFile(
+LofeCreateFile(
 	LPCWSTR					FileName,
 	DWORD					AccessMode,
 	DWORD					ShareMode,
@@ -121,32 +175,32 @@ MirrorCreateFile(
 
 	DbgPrint(L"\tShareMode = 0x%x\n", ShareMode);
 
-	MirrorCheckFlag(ShareMode, FILE_SHARE_READ);
-	MirrorCheckFlag(ShareMode, FILE_SHARE_WRITE);
-	MirrorCheckFlag(ShareMode, FILE_SHARE_DELETE);
+	LofeCheckFlag(ShareMode, FILE_SHARE_READ);
+	LofeCheckFlag(ShareMode, FILE_SHARE_WRITE);
+	LofeCheckFlag(ShareMode, FILE_SHARE_DELETE);
 
 	DbgPrint(L"\tAccessMode = 0x%x\n", AccessMode);
 
-	MirrorCheckFlag(AccessMode, GENERIC_READ);
-	MirrorCheckFlag(AccessMode, GENERIC_WRITE);
-	MirrorCheckFlag(AccessMode, GENERIC_EXECUTE);
+	LofeCheckFlag(AccessMode, GENERIC_READ);
+	LofeCheckFlag(AccessMode, GENERIC_WRITE);
+	LofeCheckFlag(AccessMode, GENERIC_EXECUTE);
 	
-	MirrorCheckFlag(AccessMode, DELETE);
-	MirrorCheckFlag(AccessMode, FILE_READ_DATA);
-	MirrorCheckFlag(AccessMode, FILE_READ_ATTRIBUTES);
-	MirrorCheckFlag(AccessMode, FILE_READ_EA);
-	MirrorCheckFlag(AccessMode, READ_CONTROL);
-	MirrorCheckFlag(AccessMode, FILE_WRITE_DATA);
-	MirrorCheckFlag(AccessMode, FILE_WRITE_ATTRIBUTES);
-	MirrorCheckFlag(AccessMode, FILE_WRITE_EA);
-	MirrorCheckFlag(AccessMode, FILE_APPEND_DATA);
-	MirrorCheckFlag(AccessMode, WRITE_DAC);
-	MirrorCheckFlag(AccessMode, WRITE_OWNER);
-	MirrorCheckFlag(AccessMode, SYNCHRONIZE);
-	MirrorCheckFlag(AccessMode, FILE_EXECUTE);
-	MirrorCheckFlag(AccessMode, STANDARD_RIGHTS_READ);
-	MirrorCheckFlag(AccessMode, STANDARD_RIGHTS_WRITE);
-	MirrorCheckFlag(AccessMode, STANDARD_RIGHTS_EXECUTE);
+	LofeCheckFlag(AccessMode, DELETE);
+	LofeCheckFlag(AccessMode, FILE_READ_DATA);
+	LofeCheckFlag(AccessMode, FILE_READ_ATTRIBUTES);
+	LofeCheckFlag(AccessMode, FILE_READ_EA);
+	LofeCheckFlag(AccessMode, READ_CONTROL);
+	LofeCheckFlag(AccessMode, FILE_WRITE_DATA);
+	LofeCheckFlag(AccessMode, FILE_WRITE_ATTRIBUTES);
+	LofeCheckFlag(AccessMode, FILE_WRITE_EA);
+	LofeCheckFlag(AccessMode, FILE_APPEND_DATA);
+	LofeCheckFlag(AccessMode, WRITE_DAC);
+	LofeCheckFlag(AccessMode, WRITE_OWNER);
+	LofeCheckFlag(AccessMode, SYNCHRONIZE);
+	LofeCheckFlag(AccessMode, FILE_EXECUTE);
+	LofeCheckFlag(AccessMode, STANDARD_RIGHTS_READ);
+	LofeCheckFlag(AccessMode, STANDARD_RIGHTS_WRITE);
+	LofeCheckFlag(AccessMode, STANDARD_RIGHTS_EXECUTE);
 
 	// When filePath is a directory, needs to change the flag so that the file can be opened.
 	fileAttr = GetFileAttributes(filePath);
@@ -156,32 +210,32 @@ MirrorCreateFile(
 	}
 	DbgPrint(L"\tFlagsAndAttributes = 0x%x\n", FlagsAndAttributes);
 
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_ARCHIVE);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_ENCRYPTED);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_HIDDEN);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_NORMAL);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_OFFLINE);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_READONLY);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_SYSTEM);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_TEMPORARY);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_WRITE_THROUGH);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_OVERLAPPED);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_NO_BUFFERING);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_RANDOM_ACCESS);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_SEQUENTIAL_SCAN);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_DELETE_ON_CLOSE);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_BACKUP_SEMANTICS);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_POSIX_SEMANTICS);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_OPEN_REPARSE_POINT);
-	MirrorCheckFlag(FlagsAndAttributes, FILE_FLAG_OPEN_NO_RECALL);
-	MirrorCheckFlag(FlagsAndAttributes, SECURITY_ANONYMOUS);
-	MirrorCheckFlag(FlagsAndAttributes, SECURITY_IDENTIFICATION);
-	MirrorCheckFlag(FlagsAndAttributes, SECURITY_IMPERSONATION);
-	MirrorCheckFlag(FlagsAndAttributes, SECURITY_DELEGATION);
-	MirrorCheckFlag(FlagsAndAttributes, SECURITY_CONTEXT_TRACKING);
-	MirrorCheckFlag(FlagsAndAttributes, SECURITY_EFFECTIVE_ONLY);
-	MirrorCheckFlag(FlagsAndAttributes, SECURITY_SQOS_PRESENT);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_ARCHIVE);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_ENCRYPTED);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_HIDDEN);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_NORMAL);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_OFFLINE);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_READONLY);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_SYSTEM);
+	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_TEMPORARY);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_WRITE_THROUGH);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OVERLAPPED);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_NO_BUFFERING);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_RANDOM_ACCESS);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_SEQUENTIAL_SCAN);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_DELETE_ON_CLOSE);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_BACKUP_SEMANTICS);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_POSIX_SEMANTICS);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OPEN_REPARSE_POINT);
+	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OPEN_NO_RECALL);
+	LofeCheckFlag(FlagsAndAttributes, SECURITY_ANONYMOUS);
+	LofeCheckFlag(FlagsAndAttributes, SECURITY_IDENTIFICATION);
+	LofeCheckFlag(FlagsAndAttributes, SECURITY_IMPERSONATION);
+	LofeCheckFlag(FlagsAndAttributes, SECURITY_DELEGATION);
+	LofeCheckFlag(FlagsAndAttributes, SECURITY_CONTEXT_TRACKING);
+	LofeCheckFlag(FlagsAndAttributes, SECURITY_EFFECTIVE_ONLY);
+	LofeCheckFlag(FlagsAndAttributes, SECURITY_SQOS_PRESENT);
 
 	handle = CreateFile(
 		filePath,
@@ -207,7 +261,7 @@ MirrorCreateFile(
 
 
 static int DOKAN_CALLBACK
-MirrorCreateDirectory(
+LofeCreateDirectory(
 	LPCWSTR					FileName,
 	PDOKAN_FILE_INFO		DokanFileInfo)
 {
@@ -227,7 +281,7 @@ MirrorCreateDirectory(
 
 
 static int DOKAN_CALLBACK
-MirrorOpenDirectory(
+LofeOpenDirectory(
 	LPCWSTR					FileName,
 	PDOKAN_FILE_INFO		DokanFileInfo)
 {
@@ -273,7 +327,7 @@ MirrorOpenDirectory(
 
 
 static int DOKAN_CALLBACK
-MirrorCloseFile(
+LofeCloseFile(
 	LPCWSTR					FileName,
 	PDOKAN_FILE_INFO		DokanFileInfo)
 {
@@ -297,7 +351,7 @@ MirrorCloseFile(
 
 
 static int DOKAN_CALLBACK
-MirrorCleanup(
+LofeCleanup(
 	LPCWSTR					FileName,
 	PDOKAN_FILE_INFO		DokanFileInfo)
 {
@@ -338,7 +392,7 @@ MirrorCleanup(
 
 
 static int DOKAN_CALLBACK
-MirrorReadFile(
+LofeReadFile(
 	LPCWSTR				FileName,
 	LPVOID				Buffer,
 	DWORD				BufferLength,
@@ -401,7 +455,7 @@ MirrorReadFile(
 
 
 static int DOKAN_CALLBACK
-MirrorWriteFile(
+LofeWriteFile(
 	LPCWSTR		FileName,
 	LPCVOID		Buffer,
 	DWORD		NumberOfBytesToWrite,
@@ -471,7 +525,7 @@ MirrorWriteFile(
 
 
 static int DOKAN_CALLBACK
-MirrorFlushFileBuffers(
+LofeFlushFileBuffers(
 	LPCWSTR		FileName,
 	PDOKAN_FILE_INFO	DokanFileInfo)
 {
@@ -497,8 +551,51 @@ MirrorFlushFileBuffers(
 }
 
 
+static int isRealFile(DWORD dwFileAttributes) {
+	if (dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) return 0;
+	if (dwFileAttributes & FILE_ATTRIBUTE_DEVICE) return 0;
+	if (dwFileAttributes & FILE_ATTRIBUTE_VIRTUAL) return 0;
+	//we have a real file
+	return 1;
+}
+
+
+static int fixFileSize(WIN32_FIND_DATAW *findData) {
+	lofe_header_t header;
+
+	if (isRealFile(findData->dwFileAttributes)) {
+		WCHAR				filePath[MAX_PATH];
+		GetFilePath(filePath, MAX_PATH, L"\\");
+		wcscat_s(filePath, MAX_PATH, findData->cFileName);
+
+		DbgPrint(L"\tread_header2\n");
+		if (0 != read_header2(filePath, &header)) {
+			DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
+			return -1;
+		}
+		findData->nFileSizeHigh = header.content_len >> 32;
+		findData->nFileSizeLow = header.content_len;
+	}
+	return 0;
+}
+
+static int fixFileSize2(LPCWSTR	filePath,LPBY_HANDLE_FILE_INFORMATION findData) {
+	lofe_header_t header;
+
+	if (isRealFile(findData->dwFileAttributes)) {
+		DbgPrint(L"\tread_header2\n");
+		if (0 != read_header2(filePath, &header)) {
+			DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
+			return -1;
+		}
+		findData->nFileSizeHigh = header.content_len >> 32;
+		findData->nFileSizeLow = header.content_len;
+	}
+	return 0;
+}
+
 static int DOKAN_CALLBACK
-MirrorGetFileInformation(
+LofeGetFileInformation(
 	LPCWSTR							FileName,
 	LPBY_HANDLE_FILE_INFORMATION	HandleFileInformation,
 	PDOKAN_FILE_INFO				DokanFileInfo)
@@ -546,10 +643,23 @@ MirrorGetFileInformation(
 			HandleFileInformation->ftLastWriteTime = find.ftLastWriteTime;
 			HandleFileInformation->nFileSizeHigh = find.nFileSizeHigh;
 			HandleFileInformation->nFileSizeLow = find.nFileSizeLow;
-			DbgPrint(L"\tFindFiles OK, file size = %d\n", find.nFileSizeLow);
 			FindClose(handle);
+			fixFileSize2(filePath,HandleFileInformation);
+			DbgPrint(L"\tFindFiles OK, file size = %d\n", find.nFileSizeLow);
 		}
 	} else {
+		DbgPrint(L"\tHandleFileInformation->dwFileAttributes = 0x%08X\n", HandleFileInformation->dwFileAttributes);
+		if (isRealFile(HandleFileInformation->dwFileAttributes)) { //we have a real file
+			lofe_header_t header;
+			DbgPrint(L"\tread_header\n");
+
+			if (0 != read_header(handle, &header)) {
+				DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
+				return -1;
+			}
+			HandleFileInformation->nFileSizeHigh = header.content_len >> 32;
+			HandleFileInformation->nFileSizeLow = header.content_len;
+		}
 		DbgPrint(L"\tGetFileInformationByHandle success, file size = %d\n",
 			HandleFileInformation->nFileSizeLow);
 	}
@@ -565,7 +675,7 @@ MirrorGetFileInformation(
 
 
 static int DOKAN_CALLBACK
-MirrorFindFiles(
+LofeFindFiles(
 	LPCWSTR				FileName,
 	PFillFindData		FillFindData, // function pointer
 	PDOKAN_FILE_INFO	DokanFileInfo)
@@ -588,12 +698,13 @@ MirrorFindFiles(
 		DbgPrint(L"\tinvalid file handle. Error is %u\n\n", GetLastError());
 		return -1;
 	}
-
+	fixFileSize(&findData);
 	FillFindData(&findData, DokanFileInfo);
 	count++;
 
 	while (FindNextFile(hFind, &findData) != 0) {
- 		FillFindData(&findData, DokanFileInfo);
+		fixFileSize(&findData);
+		FillFindData(&findData, DokanFileInfo);
 		count++;
 	}
 	
@@ -612,7 +723,7 @@ MirrorFindFiles(
 
 
 static int DOKAN_CALLBACK
-MirrorDeleteFile(
+LofeDeleteFile(
 	LPCWSTR				FileName,
 	PDOKAN_FILE_INFO	DokanFileInfo)
 {
@@ -630,7 +741,7 @@ MirrorDeleteFile(
 
 
 static int DOKAN_CALLBACK
-MirrorDeleteDirectory(
+LofeDeleteDirectory(
 	LPCWSTR				FileName,
 	PDOKAN_FILE_INFO	DokanFileInfo)
 {
@@ -676,7 +787,7 @@ MirrorDeleteDirectory(
 
 
 static int DOKAN_CALLBACK
-MirrorMoveFile(
+LofeMoveFile(
 	LPCWSTR				FileName, // existing file name
 	LPCWSTR				NewFileName,
 	BOOL				ReplaceIfExisting,
@@ -713,7 +824,7 @@ MirrorMoveFile(
 
 
 static int DOKAN_CALLBACK
-MirrorLockFile(
+LofeLockFile(
 	LPCWSTR				FileName,
 	LONGLONG			ByteOffset,
 	LONGLONG			Length,
@@ -748,7 +859,7 @@ MirrorLockFile(
 
 
 static int DOKAN_CALLBACK
-MirrorSetEndOfFile(
+LofeSetEndOfFile(
 	LPCWSTR				FileName,
 	LONGLONG			ByteOffset,
 	PDOKAN_FILE_INFO	DokanFileInfo)
@@ -785,7 +896,7 @@ MirrorSetEndOfFile(
 
 
 static int DOKAN_CALLBACK
-MirrorSetAllocationSize(
+LofeSetAllocationSize(
 	LPCWSTR				FileName,
 	LONGLONG			AllocSize,
 	PDOKAN_FILE_INFO	DokanFileInfo)
@@ -828,7 +939,7 @@ MirrorSetAllocationSize(
 
 
 static int DOKAN_CALLBACK
-MirrorSetFileAttributes(
+LofeSetFileAttributes(
 	LPCWSTR				FileName,
 	DWORD				FileAttributes,
 	PDOKAN_FILE_INFO	DokanFileInfo)
@@ -853,7 +964,7 @@ MirrorSetFileAttributes(
 
 
 static int DOKAN_CALLBACK
-MirrorSetFileTime(
+LofeSetFileTime(
 	LPCWSTR				FileName,
 	CONST FILETIME*		CreationTime,
 	CONST FILETIME*		LastAccessTime,
@@ -886,7 +997,7 @@ MirrorSetFileTime(
 
 
 static int DOKAN_CALLBACK
-MirrorUnlockFile(
+LofeUnlockFile(
 	LPCWSTR				FileName,
 	LONGLONG			ByteOffset,
 	LONGLONG			Length,
@@ -921,7 +1032,7 @@ MirrorUnlockFile(
 
 
 static int DOKAN_CALLBACK
-MirrorGetFileSecurity(
+LofeGetFileSecurity(
 	LPCWSTR					FileName,
 	PSECURITY_INFORMATION	SecurityInformation,
 	PSECURITY_DESCRIPTOR	SecurityDescriptor,
@@ -958,7 +1069,7 @@ MirrorGetFileSecurity(
 
 
 static int DOKAN_CALLBACK
-MirrorSetFileSecurity(
+LofeSetFileSecurity(
 	LPCWSTR					FileName,
 	PSECURITY_INFORMATION	SecurityInformation,
 	PSECURITY_DESCRIPTOR	SecurityDescriptor,
@@ -989,7 +1100,7 @@ MirrorSetFileSecurity(
 }
 
 static int DOKAN_CALLBACK
-MirrorGetVolumeInformation(
+LofeGetVolumeInformation(
 	LPWSTR		VolumeNameBuffer,
 	DWORD		VolumeNameSize,
 	LPDWORD		VolumeSerialNumber,
@@ -1017,7 +1128,7 @@ MirrorGetVolumeInformation(
 
 
 static int DOKAN_CALLBACK
-MirrorUnmount(
+LofeUnmount(
 	PDOKAN_FILE_INFO	DokanFileInfo)
 {
     UNREFERENCED_PARAMETER(DokanFileInfo);
@@ -1028,7 +1139,7 @@ MirrorUnmount(
 
 /**
  * Avoid #include <winternl.h> which as conflict with FILE_INFORMATION_CLASS definition.
- * This only for MirrorEnumerateNamedStreams. Link with ntdll.lib still required.
+ * This only for LofeEnumerateNamedStreams. Link with ntdll.lib still required.
  * 
  * Not needed if you're not using NtQueryInformationFile!
  *
@@ -1049,7 +1160,7 @@ NTSYSCALLAPI NTSTATUS NTAPI 	NtQueryInformationFile(_In_ HANDLE FileHandle, _Out
  */
 
 static int DOKAN_CALLBACK
-MirrorEnumerateNamedStreams(
+LofeEnumerateNamedStreams(
 	LPCWSTR					FileName,
 	PVOID*					EnumContext,
 	LPWSTR					StreamName,
@@ -1071,7 +1182,7 @@ MirrorEnumerateNamedStreams(
 	}
 
 	// As we are requested one by one, it would be better to use FindFirstStream / FindNextStream instead of requesting all streams each time
-	// But this doesn't really matter on mirror sample
+	// But this doesn't really matter on Lofe sample
 	BYTE InfoBlock[64 * 1024];
 	PFILE_STREAM_INFORMATION pStreamInfo = (PFILE_STREAM_INFORMATION)InfoBlock;
 	IO_STATUS_BLOCK ioStatus;
@@ -1130,7 +1241,7 @@ dokan_wmain(ULONG argc, PWCHAR argv[])
 	}
 
 	if (argc < 5) {
-		fprintf(stderr, "mirror.exe\n"
+		fprintf(stderr, "Lofe.exe\n"
 			"  /r RootDirectory (ex. /r c:\\test)\n"
 			"  /l DriveLetter (ex. /l m)\n"
 			"  /t ThreadCount (ex. /t 5)\n"
@@ -1193,32 +1304,32 @@ dokan_wmain(ULONG argc, PWCHAR argv[])
 	dokanOptions->Options |= DOKAN_OPTION_ALT_STREAM;
 
 	ZeroMemory(dokanOperations, sizeof(DOKAN_OPERATIONS));
-	dokanOperations->CreateFile = MirrorCreateFile;
-	dokanOperations->OpenDirectory = MirrorOpenDirectory;
-	dokanOperations->CreateDirectory = MirrorCreateDirectory;
-	dokanOperations->Cleanup = MirrorCleanup;
-	dokanOperations->CloseFile = MirrorCloseFile;
-	dokanOperations->ReadFile = MirrorReadFile;
-	dokanOperations->WriteFile = MirrorWriteFile;
-	dokanOperations->FlushFileBuffers = MirrorFlushFileBuffers;
-	dokanOperations->GetFileInformation = MirrorGetFileInformation;
-	dokanOperations->FindFiles = MirrorFindFiles;
+	dokanOperations->CreateFile = LofeCreateFile;
+	dokanOperations->OpenDirectory = LofeOpenDirectory;
+	dokanOperations->CreateDirectory = LofeCreateDirectory;
+	dokanOperations->Cleanup = LofeCleanup;
+	dokanOperations->CloseFile = LofeCloseFile;
+	dokanOperations->ReadFile = LofeReadFile;
+	dokanOperations->WriteFile = LofeWriteFile;
+	dokanOperations->FlushFileBuffers = LofeFlushFileBuffers;
+	dokanOperations->GetFileInformation = LofeGetFileInformation;
+	dokanOperations->FindFiles = LofeFindFiles;
 	dokanOperations->FindFilesWithPattern = NULL;
-	dokanOperations->SetFileAttributes = MirrorSetFileAttributes;
-	dokanOperations->SetFileTime = MirrorSetFileTime;
-	dokanOperations->DeleteFile = MirrorDeleteFile;
-	dokanOperations->DeleteDirectory = MirrorDeleteDirectory;
-	dokanOperations->MoveFile = MirrorMoveFile;
-	dokanOperations->SetEndOfFile = MirrorSetEndOfFile;
-	dokanOperations->SetAllocationSize = MirrorSetAllocationSize;	
-	dokanOperations->LockFile = MirrorLockFile;
-	dokanOperations->UnlockFile = MirrorUnlockFile;
-	dokanOperations->GetFileSecurity = MirrorGetFileSecurity;
-	dokanOperations->SetFileSecurity = MirrorSetFileSecurity;
+	dokanOperations->SetFileAttributes = LofeSetFileAttributes;
+	dokanOperations->SetFileTime = LofeSetFileTime;
+	dokanOperations->DeleteFile = LofeDeleteFile;
+	dokanOperations->DeleteDirectory = LofeDeleteDirectory;
+	dokanOperations->MoveFile = LofeMoveFile;
+	dokanOperations->SetEndOfFile = LofeSetEndOfFile;
+	dokanOperations->SetAllocationSize = LofeSetAllocationSize;	
+	dokanOperations->LockFile = LofeLockFile;
+	dokanOperations->UnlockFile = LofeUnlockFile;
+	dokanOperations->GetFileSecurity = LofeGetFileSecurity;
+	dokanOperations->SetFileSecurity = LofeSetFileSecurity;
 	dokanOperations->GetDiskFreeSpace = NULL;
-	dokanOperations->GetVolumeInformation = MirrorGetVolumeInformation;
-	dokanOperations->Unmount = MirrorUnmount;
-	dokanOperations->EnumerateNamedStreams = MirrorEnumerateNamedStreams;
+	dokanOperations->GetVolumeInformation = LofeGetVolumeInformation;
+	dokanOperations->Unmount = LofeUnmount;
+	dokanOperations->EnumerateNamedStreams = LofeEnumerateNamedStreams;
 
 	status = DokanMain(dokanOptions, dokanOperations);
 	switch (status) {
@@ -1273,8 +1384,6 @@ int lofe_start_vfs(PWCHAR encrypted_files_path, PWCHAR mount_point) {
 	res = dokan_wmain(fuse_argc, fuse_argv);
 	return res;
 }
-
-#include "lofe_internals.h"
 
 int __cdecl wmain(ULONG argc, PWCHAR argv[]) {
 	uint8_t key_bytes[] = { 0xC5, 0xE6, 0x67, 0xEE, 0x10, 0x97, 0x19, 0x74, 0xDA, 0xC5, 0x52, 0x65, 0x26, 0x01, 0x77, 0x05 };
