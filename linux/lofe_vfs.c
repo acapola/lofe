@@ -57,17 +57,15 @@ static void translate_path(const char *path_from_sys, char *actual_path_ptr){
 }
 
 
-static int write_header(int fd, uint64_t len){
-	lofe_header_t header;
-	header.info=0;
-	//header.iv[0] = 0x0123456789ABCDEF;
-	//header.iv[1] = 0x1122334455667788;
-	get_random(header.iv, sizeof(header.iv));
-	header.content_len=len;
-	int res = pwrite(fd, &header, sizeof(header), 0);
+int lofe_write_header(lofe_file_handle_t h, lofe_header_t header){
+	int res = pwrite(h, &header, sizeof(header), 0);
 	if (res == -1){
 		printf("write_header failure: %d\n",errno);
-		res = -errno;
+		res = -1;
+	}
+	if (res != sizeof(header)){
+		printf("write_header failure: %d\n",errno);
+		res = -1;
 	}
 	return 0;
 }
@@ -106,24 +104,13 @@ static int write_header2(const char *native_path, lofe_header_t new_header){
 	return 0;
 }
 
-static int update_header_len(int fd, uint64_t content_len){
-	int res;
-	lofe_header_t header;
-	res = pread(fd, &header, sizeof(lofe_header_t), 0);
-	header.content_len = content_len;
-	res = pwrite(fd, &header, sizeof(lofe_header_t), 0);
-	if (res == -1)
-		return -errno;	
-	return 0;
-}
-
 static int update_header_len2(const char *native_path, uint64_t len){
 	int fd;
 	int res;
 	fd = open(native_path, O_RDWR);
 	if (fd == -1)
 		return -errno;
-	res=update_header_len(fd,len);
+	res=lofe_update_header_len(fd,len);
 	if (res == -1)
 		return -errno;	
 	close(fd);
@@ -280,7 +267,7 @@ static int xmp_mknod(const char *path, mode_t mode, dev_t rdev){
 	if (S_ISREG(mode)) {
 		fd = open(path, O_CREAT | O_EXCL | O_WRONLY, mode);
 		if (fd >= 0){
-			int res2=write_header(fd,0);
+			int res2=lofe_write_new_header(fd,0);
 			if(res2) res2 = -errno;
 			res = close(fd);
 			if(res2) return res2;
@@ -558,18 +545,7 @@ static int xmp_write(
 			struct fuse_file_info *fi){
 	printf("xmp_write\n");
 	int fd;
-	int res;
-	lofe_header_t header;
-	off_t content_end_write_pos;
-	size_t aligned_size;
-	off_t aligned_offset;
-	size_t write_offset;
-	size_t n_blocks;
-	size_t regular_blocks;
-	size_t block;
-	size_t last_block_unaligned_size;
-	struct stat st;
-	(void) fi;
+	//(void) fi;
 		char actual_path_ptr[1024];
 	unsigned int len_path = strlen(path)+base_path_len+1;//+1 for final null char
 	if(len_path>sizeof(actual_path_ptr)){
@@ -582,100 +558,7 @@ static int xmp_write(
     fd = open(path, O_RDWR);
 	if (fd == -1)
 		return -errno;
-	
-	//get the current size of the content, store it in header.content_len
-	res = pread(fd, &header, sizeof(lofe_header_t), 0);
-	if (res == -1){
-		close(fd);
-		return -errno;
-	}
-	
-	content_end_write_pos = offset + size;
-	align_size_offset(size,offset,&aligned_size,&aligned_offset);
-	write_offset = aligned_offset+sizeof(lofe_header_t);
-	n_blocks = aligned_size / BLOCK_SIZE;
-	regular_blocks = n_blocks;
-	last_block_unaligned_size = content_end_write_pos % BLOCK_SIZE;
-		
-	if(last_block_unaligned_size) 
-		regular_blocks--;//remove the last block from the count of regular blocks
-
-	//process initial block if it is not aligned, otherwise it is treated as a regular block
-	if(aligned_offset!=offset){
-		off_t read_size = offset-aligned_offset;
-		off_t unaligned_offset = read_size;
-		off_t unaligned_size = BLOCK_SIZE-read_size;
-		int8_t aligned_buf[BLOCK_SIZE];
-		
-        if(0==regular_blocks){//first block = last block
-            if(last_block_unaligned_size){
-                read_size=BLOCK_SIZE;
-                last_block_unaligned_size=0;
-            }
-        } else {
-            regular_blocks--;//remove the first block from the count of regular blocks.
-		}
-		
-		//read beginning of the block from file
-		//res = pread(fd, aligned_buf, read_size, write_offset);
-		res = lofe_read_block(fd, aligned_buf, write_offset, &header);
-		if (res < 0){ //0 is OK here, it just means end of file, so we are doing a write that will grow the file.
-			close(fd);
-			return -errno;
-		}
-		//copy the unaligned data to aligned_buf to form a full block
-		memcpy(aligned_buf+unaligned_offset,buf,unaligned_size);
-		//write the aligned block to file
-		res = lofe_write_block(fd, aligned_buf, write_offset, &header);
-		if (res == -1){
-			close(fd);
-			return -errno;
-		}	
-		write_offset+=BLOCK_SIZE;
-		buf+=unaligned_size;
-	} 
-	
-	//process regular blocks
-	for(block=0;block<regular_blocks;block++){
-		res = lofe_write_block(fd, buf, write_offset, &header);
-		if (res == -1){
-			close(fd);
-			return -errno;
-		}	
-		write_offset+=BLOCK_SIZE;
-		buf+=BLOCK_SIZE;
-	}
-	
-	//process final block if it is not aligned, otherwise it was treated as a regular block
-	if(last_block_unaligned_size){
-		off_t read_size = BLOCK_SIZE-last_block_unaligned_size;
-		int8_t aligned_buf[BLOCK_SIZE];
-		
-		//read end of the block from file
-		res = lofe_read_block(fd, aligned_buf, write_offset, &header);
-		if (res < 0){ //0 is OK here, it just means end of file, so we are doing a write that will grow the file.
-			close(fd);
-			return -errno;
-		}
-		//copy the unaligned data to aligned_buf to form a full block
-		memcpy(aligned_buf,buf,last_block_unaligned_size);
-		//write the aligned block to file
-		res = lofe_write_block(fd, aligned_buf, write_offset, &header);
-		if (res == -1){
-			close(fd);
-			return -errno;
-		}
-	}
-	
-	//if the file grew, update the header
-	if(header.content_len<content_end_write_pos){
-		res = update_header_len(fd, content_end_write_pos);
-		if (res){
-			close(fd);
-			return -errno;
-		}		
-	}
-	
+	if(lofe_write(fd,buf,size,offset)) size = -errno;
 	close(fd);
 	return size;
 }

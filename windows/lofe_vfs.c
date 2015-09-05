@@ -48,16 +48,18 @@ GetFilePath(
 	wcsncat_s(filePath, numberOfElements, FileName, wcslen(FileName));
 }
 
-
-static int write_header(HANDLE handle, uint64_t len) {
-	lofe_header_t header;
-	header.info = 0;
-	header.iv[0] = 0x0123456789ABCDEF;
-	header.iv[1] = 0x1122334455667788;
-	//get_random(header.iv, sizeof(header.iv));
-	header.content_len = len;
+int lofe_write_header(lofe_file_handle_t h, lofe_header_t header) {
+	LARGE_INTEGER distanceToMove;
 	DWORD NumberOfBytesWritten;
-	if (!WriteFile(handle, &header, sizeof(header), &NumberOfBytesWritten, NULL)) {
+	distanceToMove.QuadPart = 0;
+	if (!SetFilePointerEx(h, distanceToMove, NULL, FILE_BEGIN)) {
+		DbgPrint(L"\tseek error, offset = %d, error = %d\n", 0, GetLastError());
+		return -1;
+	}
+	if (!WriteFile(h, &header, sizeof(header), &NumberOfBytesWritten, NULL)) {
+		return -1;
+	}
+	if (sizeof(header)!=NumberOfBytesWritten) {
 		return -1;
 	}
 	return 0;
@@ -70,11 +72,9 @@ int lofe_read_header(lofe_file_handle_t h, lofe_header_t *header) {
 	if (!SetFilePointerEx(h, distanceToMove, NULL, FILE_BEGIN)) {
 		return -1;
 	}
-
 	if (!ReadFile(h, header, sizeof(lofe_header_t), &ReadLength, NULL)) {
 		return -1;
 	}
-
 	return 0;
 }
 
@@ -140,24 +140,29 @@ static int fixFileSize2(LPCWSTR	filePath, LPBY_HANDLE_FILE_INFORMATION findData)
 			return -1;
 		}
 		findData->nFileSizeHigh = header.content_len >> 32;
-		findData->nFileSizeLow = header.content_len;
+		findData->nFileSizeLow = (uint32_t)header.content_len;
 	}
 	return 0;
 }
 
 
 int lofe_read_block(lofe_file_handle_t h, int8_t*buf, off_t offset, const lofe_header_t * const header) {
+	LARGE_INTEGER distanceToMove;
 	DWORD ReadLength;
 	int8_t enc_buf[BLOCK_SIZE];
 	if (offset%BLOCK_SIZE) {
 		printf("ERROR: lofe_read_block, unaligned offset: %X\n", offset);
 		return -EINVAL;
 	}
+	distanceToMove.QuadPart = offset;
+	if (!SetFilePointerEx(h, distanceToMove, NULL, FILE_BEGIN)) {
+		DbgPrint(L"\tseek error, offset = %d, error = %d\n", offset, GetLastError());
+		return -1;
+	}
 	if (!ReadFile(h, buf, BLOCK_SIZE, &ReadLength, NULL)) {
 		DbgPrint(L"\tlofe_read_block error = %u, buffer length = %d, read length = %d\n\n",
 			GetLastError(), BLOCK_SIZE, ReadLength);
 		return -1;
-
 	}
 	else {
 		DbgPrint(L"\tlofe_read_block %d, offset %d\n\n", ReadLength, offset);
@@ -166,8 +171,37 @@ int lofe_read_block(lofe_file_handle_t h, int8_t*buf, off_t offset, const lofe_h
 		printf("ERROR: lofe_read_block, could not read all the requested bytes\n");
 		return -EIO;
 	}
-	//lofe_decrypt_block(buf, enc_buf, header->iv, offset);
+	lofe_decrypt_block(buf, enc_buf, header->iv, offset);
 	return BLOCK_SIZE;
+}
+
+int lofe_write_block(lofe_file_handle_t h, const int8_t * const buf, off_t offset, const lofe_header_t * const header) {
+	LARGE_INTEGER distanceToMove;
+	DWORD NumberOfBytesWritten;
+	int8_t enc_buf[BLOCK_SIZE];
+	if (offset%BLOCK_SIZE) {
+		printf("ERROR: lofe_write_block, unaligned offset: %X\n", offset);
+		return -EINVAL;
+	}
+	lofe_encrypt_block(enc_buf, buf, header->iv, offset);
+	distanceToMove.QuadPart = offset;
+	if (!SetFilePointerEx(h, distanceToMove, NULL, FILE_BEGIN)) {
+		DbgPrint(L"\tseek error, offset = %d, error = %d\n", offset, GetLastError());
+		return -1;
+	}
+	if (!WriteFile(h, buf, BLOCK_SIZE, &NumberOfBytesWritten, NULL)) {
+		DbgPrint(L"\twrite error = %u, buffer length = %d, write length = %d\n",
+			GetLastError(), BLOCK_SIZE, NumberOfBytesWritten);
+		return -1;
+	}
+	else {
+		DbgPrint(L"\twrite %d, offset %d\n\n", NumberOfBytesWritten, offset);
+	}
+	if (NumberOfBytesWritten != BLOCK_SIZE) {
+		printf("ERROR: lofe_write_block, could not write all the requested bytes\n");
+		return -EIO;
+	}
+	return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

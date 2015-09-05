@@ -165,8 +165,11 @@ void lofe_load_key(int8_t *key,int8_t *key_tweak){
     _key_tweak = _mm_loadu_si128((__m128i *) key_tweak);
 }
 
-#define m128iSetL(m,uint64) do{((uint64_t*)&m)[0] = uint64;}while(0)
-#define m128iSetH(m,uint64) do{((uint64_t*)&m)[1] = uint64;}while(0)
+#define m128iL(m) (((uint64_t*)&m)[0])
+#define m128iH(m) (((uint64_t*)&m)[1])
+
+//#define m128iSetL(m,uint64) do{m128iL(m) = uint64;}while(0)
+//#define m128iSetH(m,uint64) do{m128iH(m) = uint64;}while(0)
     
 void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset){
 	__m128i _src = _mm_loadu_si128((__m128i *) src);
@@ -176,8 +179,10 @@ void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset
 	__m128i _offset2;
 	//_offset2.m128i_u64[1] = 0;
 	//_offset2.m128i_u64[0] = offset;
-    m128iSetH(_offset2,0);
-    m128iSetL(_offset2,offset);
+    //m128iSetH(_offset2,0);
+    //m128iSetL(_offset2,offset);
+	m128iH(_offset2) = 0;
+	m128iL(_offset2) = offset;
 
 	_offset2 = _mm_aesenc_si128(_offset2, _key_tweak);
 	_offset2 = _mm_aesenc_si128(_offset2, _iv);
@@ -190,9 +195,11 @@ void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset)
 	__m128i _offset2;
 	//_offset2.m128i_u64[1] = 0;
 	//_offset2.m128i_u64[0] = offset;
-    m128iSetH(_offset2,0);
-    m128iSetL(_offset2,offset);
-    
+    //m128iSetH(_offset2,0);
+    //m128iSetL(_offset2,offset);
+	m128iH(_offset2) = 0;
+	m128iL(_offset2) = offset;
+
     __m128i _iv = _mm_loadu_si128((__m128i *) iv);
 	__m128i _dst;
 	aes_dec128(src,(int8_t *)&_dst);
