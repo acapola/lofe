@@ -1,12 +1,16 @@
 package uk.co.nimp;
 
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FileSystemTest {
     public static final class OsUtils
     {
@@ -22,18 +26,44 @@ public class FileSystemTest {
  // and so on
     }
     static File base;
-    static {
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
         String baseDir;
         if(OsUtils.isWindows()) baseDir = "t:\\";
         else baseDir = "/home/seb/tmp/myfs";
         base=new File(baseDir,"FileSystemTest");
-        if(base.exists())
-            deleteDirectory(base);
+        /*boolean deleted = false;
+        if(base.exists()) {
+            try {
+                deleted = deleteDirectory(base);
+                assert(deleted);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         assert(!base.exists());
-        base.mkdir();
+        base.mkdir();*/
     }
 
-    public static boolean deleteDirectory(File directory) {
+    /*static {
+        String baseDir;
+        if(OsUtils.isWindows()) baseDir = "t:\\";
+        else baseDir = "/home/seb/tmp/myfs";
+        base=new File(baseDir,"FileSystemTest");
+        if(base.exists()) {
+            try {
+                deleteDirectory(base);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        assert(!base.exists());
+        base.mkdir();
+    }*/
+
+    public static boolean deleteDirectory(File directory) throws IOException {
+        System.out.println("delete "+directory.getCanonicalPath());
         if(directory.exists()){
             File[] files = directory.listFiles();
             if(null!=files){
@@ -47,7 +77,7 @@ public class FileSystemTest {
                 }
             }
         }
-        return(directory.delete());
+        return directory.delete();
     }
 
     static void writeToFile(byte[] data,File path) throws IOException {

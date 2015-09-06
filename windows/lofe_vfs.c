@@ -33,6 +33,38 @@ static void DbgPrint(LPCWSTR format, ...)
 	}
 }
 
+#include <strsafe.h>
+void PrintError(void) {
+	// Retrieve the system error message for the last-error code
+	if (g_DebugMode) {
+		LPVOID lpMsgBuf;
+		LPVOID lpDisplayBuf;
+		DWORD dw = GetLastError();
+
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER |
+			FORMAT_MESSAGE_FROM_SYSTEM |
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			dw,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			(LPTSTR)&lpMsgBuf,
+			0, NULL);
+
+		/*lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
+		(lstrlen((LPCTSTR)lpMsgBuf) + 40) * sizeof(TCHAR));
+		StringCchPrintf((LPTSTR)lpDisplayBuf,
+		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+		TEXT("Failed with error %d: %s"), dw, lpMsgBuf);
+		MessageBox(NULL, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK);
+
+		LocalFree(lpDisplayBuf);*/
+		DbgPrint(L"%s\n", lpMsgBuf);
+		LocalFree(lpMsgBuf);
+	}
+
+}
+
 static WCHAR RootDirectory[MAX_PATH] = L"C:";
 static WCHAR MountPoint[MAX_PATH] = L"M:";
 
@@ -68,19 +100,32 @@ int lofe_write_header(lofe_file_handle_t h, lofe_header_t header) {
 int lofe_read_header(lofe_file_handle_t h, lofe_header_t *header) {
 	LARGE_INTEGER distanceToMove;
 	DWORD ReadLength;
+	DWORD remaining = sizeof(lofe_header_t);
+	int loopCnt = 0;
 	distanceToMove.QuadPart = 0;
 	if (!SetFilePointerEx(h, distanceToMove, NULL, FILE_BEGIN)) {
 		return -1;
 	}
-	if (!ReadFile(h, header, sizeof(lofe_header_t), &ReadLength, NULL)) {
-		return -1;
-	}
+	do {
+		if (!ReadFile(h, header, sizeof(lofe_header_t), &ReadLength, NULL)) {
+			return -1;
+		}
+		remaining -= ReadLength;
+		loopCnt++;
+		if (loopCnt > 10) {
+			if (ReadLength != sizeof(lofe_header_t)) {
+				DbgPrint(L"\tlofe_read_header: ReadFile failed, remaining=%d\n", remaining);
+				return -1;
+			}
+		}
+	} while (remaining);
+	
+	DbgPrint(L"\tlofe_read_header: content_len=%X\n", header->content_len);
 	return 0;
 }
 
 static int read_header2(LPCWSTR native_path, lofe_header_t *header) {
-	DWORD ReadLength;
-
+	int res;
 	HANDLE handle = CreateFile(
 		native_path,
 		GENERIC_READ,
@@ -92,13 +137,10 @@ static int read_header2(LPCWSTR native_path, lofe_header_t *header) {
 	if (handle == INVALID_HANDLE_VALUE) {
 		return -1;
 	}
+	res = lofe_read_header(handle, header);
 	
-	if (!ReadFile(handle, header, sizeof(lofe_header_t), &ReadLength, NULL)) {
-		return -1;
-	}
-
 	CloseHandle(handle);
-	return 0;
+	return res;
 }
 
 
@@ -139,13 +181,25 @@ static int fixFileSize2(LPCWSTR	filePath, LPBY_HANDLE_FILE_INFORMATION findData)
 			DbgPrint(L"\tread_header2 failed: error code = %d\n\n", GetLastError());
 			return -1;
 		}
-		findData->nFileSizeHigh = header.content_len >> 32;
+		findData->nFileSizeHigh = (uint32_t)(header.content_len >> 32);
 		findData->nFileSizeLow = (uint32_t)header.content_len;
 	}
 	return 0;
 }
 
+static int fixFileSize3(HANDLE handle, LPBY_HANDLE_FILE_INFORMATION findData) {
+	lofe_header_t header;
 
+	if (isRealFile(findData->dwFileAttributes)) {
+		if (0 != lofe_read_header(handle, &header)) {
+			DbgPrint(L"\tlofe_read_header failed: error code = %d\n\n", GetLastError());
+			return -1;
+		}
+		findData->nFileSizeHigh = (uint32_t)(header.content_len >> 32);
+		findData->nFileSizeLow = (uint32_t)header.content_len;
+	}
+	return 0;
+}
 int lofe_read_block(lofe_file_handle_t h, int8_t*buf, off_t offset, const lofe_header_t * const header) {
 	LARGE_INTEGER distanceToMove;
 	DWORD ReadLength;
@@ -189,7 +243,7 @@ int lofe_write_block(lofe_file_handle_t h, const int8_t * const buf, off_t offse
 		DbgPrint(L"\tseek error, offset = %d, error = %d\n", offset, GetLastError());
 		return -1;
 	}
-	if (!WriteFile(h, buf, BLOCK_SIZE, &NumberOfBytesWritten, NULL)) {
+	if (!WriteFile(h, enc_buf, BLOCK_SIZE, &NumberOfBytesWritten, NULL)) {
 		DbgPrint(L"\twrite error = %u, buffer length = %d, write length = %d\n",
 			GetLastError(), BLOCK_SIZE, NumberOfBytesWritten);
 		return -1;
@@ -246,6 +300,27 @@ PrintUserName(PDOKAN_FILE_INFO	DokanFileInfo)
 
 #define LofeCheckFlag(val, flag) if (val&flag) { DbgPrint(L"\t" L#flag L"\n"); }
 
+int fileExists(LPCWSTR file){
+	WIN32_FIND_DATA FindFileData;
+	HANDLE handle = FindFirstFile(file, &FindFileData);
+	int found = handle != INVALID_HANDLE_VALUE;
+	if (found){
+		FindClose(handle);
+	}
+	return found;
+}
+
+int isDirectory(LPCWSTR file){
+	DWORD dwAttrib = GetFileAttributes(file);
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+int isFile(LPCWSTR file) {
+	DWORD dwAttrib = GetFileAttributes(file);
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
 static int DOKAN_CALLBACK
 LofeCreateFile(
 	LPCWSTR					FileName,
@@ -258,98 +333,117 @@ LofeCreateFile(
 	WCHAR filePath[MAX_PATH];
 	HANDLE handle;
 	DWORD fileAttr;
-
-	GetFilePath(filePath, MAX_PATH, FileName);
-
-	DbgPrint(L"CreateFile : %s\n", filePath);
-
-	PrintUserName(DokanFileInfo);
-
-	if (CreationDisposition == CREATE_NEW)
-		DbgPrint(L"\tCREATE_NEW\n");
-	if (CreationDisposition == OPEN_ALWAYS)
-		DbgPrint(L"\tOPEN_ALWAYS\n");
-	if (CreationDisposition == CREATE_ALWAYS)
-		DbgPrint(L"\tCREATE_ALWAYS\n");
-	if (CreationDisposition == OPEN_EXISTING)
-		DbgPrint(L"\tOPEN_EXISTING\n");
-	if (CreationDisposition == TRUNCATE_EXISTING)
-		DbgPrint(L"\tTRUNCATE_EXISTING\n");
-
-	/*
-	if (ShareMode == 0 && AccessMode & FILE_WRITE_DATA)
-		ShareMode = FILE_SHARE_WRITE;
-	else if (ShareMode == 0)
-		ShareMode = FILE_SHARE_READ;
-	*/
-
-	DbgPrint(L"\tShareMode = 0x%x\n", ShareMode);
-
-	LofeCheckFlag(ShareMode, FILE_SHARE_READ);
-	LofeCheckFlag(ShareMode, FILE_SHARE_WRITE);
-	LofeCheckFlag(ShareMode, FILE_SHARE_DELETE);
-
-	DbgPrint(L"\tAccessMode = 0x%x\n", AccessMode);
-
-	LofeCheckFlag(AccessMode, GENERIC_READ);
-	LofeCheckFlag(AccessMode, GENERIC_WRITE);
-	LofeCheckFlag(AccessMode, GENERIC_EXECUTE);
+	int _fileExists = 0;
+	int writeHeader = 0;
+	int aFile = 0;
+	int aDirectory = 0;
+	int createRequest = 0;
 	
-	LofeCheckFlag(AccessMode, DELETE);
-	LofeCheckFlag(AccessMode, FILE_READ_DATA);
-	LofeCheckFlag(AccessMode, FILE_READ_ATTRIBUTES);
-	LofeCheckFlag(AccessMode, FILE_READ_EA);
-	LofeCheckFlag(AccessMode, READ_CONTROL);
-	LofeCheckFlag(AccessMode, FILE_WRITE_DATA);
-	LofeCheckFlag(AccessMode, FILE_WRITE_ATTRIBUTES);
-	LofeCheckFlag(AccessMode, FILE_WRITE_EA);
-	LofeCheckFlag(AccessMode, FILE_APPEND_DATA);
-	LofeCheckFlag(AccessMode, WRITE_DAC);
-	LofeCheckFlag(AccessMode, WRITE_OWNER);
-	LofeCheckFlag(AccessMode, SYNCHRONIZE);
-	LofeCheckFlag(AccessMode, FILE_EXECUTE);
-	LofeCheckFlag(AccessMode, STANDARD_RIGHTS_READ);
-	LofeCheckFlag(AccessMode, STANDARD_RIGHTS_WRITE);
-	LofeCheckFlag(AccessMode, STANDARD_RIGHTS_EXECUTE);
+	{
+		GetFilePath(filePath, MAX_PATH, FileName);
+		aDirectory = isDirectory(filePath);
+		_fileExists = fileExists(filePath);
+		aFile = isFile(filePath);
+		createRequest = CreationDisposition & CREATE_ALWAYS;
+		writeHeader = ((AccessMode & GENERIC_WRITE)||createRequest) && (!_fileExists) && !aDirectory;//if we create the file, we need to write the header
+		
+		if (createRequest) {//if we create the file, we need to write the header, so we force the write mode.
+			AccessMode |= GENERIC_WRITE | FILE_SHARE_WRITE;
+		}
 
-	// When filePath is a directory, needs to change the flag so that the file can be opened.
-	fileAttr = GetFileAttributes(filePath);
-	if (fileAttr && fileAttr & FILE_ATTRIBUTE_DIRECTORY) {
-		FlagsAndAttributes |= FILE_FLAG_BACKUP_SEMANTICS;
-		//AccessMode = 0;
+		DbgPrint(L"CreateFile : %s\n", filePath);
+		DbgPrint(L"_fileExists=%d,aFile=%d,aDirectory=%d,writeHeader=%d\n", _fileExists,aFile, aDirectory,writeHeader);
+		PrintUserName(DokanFileInfo);
+
+		if (CreationDisposition == CREATE_NEW)
+			DbgPrint(L"\tCREATE_NEW\n");
+		if (CreationDisposition == OPEN_ALWAYS)
+			DbgPrint(L"\tOPEN_ALWAYS\n");
+		if (CreationDisposition == CREATE_ALWAYS)
+			DbgPrint(L"\tCREATE_ALWAYS\n");
+		if (CreationDisposition == OPEN_EXISTING)
+			DbgPrint(L"\tOPEN_EXISTING\n");
+		if (CreationDisposition == TRUNCATE_EXISTING)
+			DbgPrint(L"\tTRUNCATE_EXISTING\n");
+
+		/*
+		if (ShareMode == 0 && AccessMode & FILE_WRITE_DATA)
+			ShareMode = FILE_SHARE_WRITE;
+		else if (ShareMode == 0)
+			ShareMode = FILE_SHARE_READ;
+		*/
+		
+		//if ((!_fileExists) || aFile) {
+			ShareMode |= FILE_SHARE_READ;//we always need read access
+			AccessMode |= GENERIC_READ;
+		//}
+		DbgPrint(L"\tShareMode = 0x%x\n", ShareMode);
+
+		LofeCheckFlag(ShareMode, FILE_SHARE_READ);
+		LofeCheckFlag(ShareMode, FILE_SHARE_WRITE);
+		LofeCheckFlag(ShareMode, FILE_SHARE_DELETE);
+
+		DbgPrint(L"\tAccessMode = 0x%x\n", AccessMode);
+
+		LofeCheckFlag(AccessMode, GENERIC_READ);
+		LofeCheckFlag(AccessMode, GENERIC_WRITE);
+		LofeCheckFlag(AccessMode, GENERIC_EXECUTE);
+
+		LofeCheckFlag(AccessMode, DELETE);
+		LofeCheckFlag(AccessMode, FILE_READ_DATA);
+		LofeCheckFlag(AccessMode, FILE_READ_ATTRIBUTES);
+		LofeCheckFlag(AccessMode, FILE_READ_EA);
+		LofeCheckFlag(AccessMode, READ_CONTROL);
+		LofeCheckFlag(AccessMode, FILE_WRITE_DATA);
+		LofeCheckFlag(AccessMode, FILE_WRITE_ATTRIBUTES);
+		LofeCheckFlag(AccessMode, FILE_WRITE_EA);
+		LofeCheckFlag(AccessMode, FILE_APPEND_DATA);
+		LofeCheckFlag(AccessMode, WRITE_DAC);
+		LofeCheckFlag(AccessMode, WRITE_OWNER);
+		LofeCheckFlag(AccessMode, SYNCHRONIZE);
+		LofeCheckFlag(AccessMode, FILE_EXECUTE);
+		LofeCheckFlag(AccessMode, STANDARD_RIGHTS_READ);
+		LofeCheckFlag(AccessMode, STANDARD_RIGHTS_WRITE);
+		LofeCheckFlag(AccessMode, STANDARD_RIGHTS_EXECUTE);
+
+		// When filePath is a directory, needs to change the flag so that the file can be opened.
+		fileAttr = GetFileAttributes(filePath);
+		if (fileAttr && fileAttr & FILE_ATTRIBUTE_DIRECTORY) {
+			FlagsAndAttributes |= FILE_FLAG_BACKUP_SEMANTICS;
+			//AccessMode = 0;
+		}
+		DbgPrint(L"\tFlagsAndAttributes = 0x%x\n", FlagsAndAttributes);
+
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_ARCHIVE);
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_ENCRYPTED);
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_HIDDEN);
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_NORMAL);
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED);
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_OFFLINE);
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_READONLY);
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_SYSTEM);
+		LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_TEMPORARY);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_WRITE_THROUGH);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OVERLAPPED);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_NO_BUFFERING);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_RANDOM_ACCESS);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_SEQUENTIAL_SCAN);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_DELETE_ON_CLOSE);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_BACKUP_SEMANTICS);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_POSIX_SEMANTICS);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OPEN_REPARSE_POINT);
+		LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OPEN_NO_RECALL);
+		LofeCheckFlag(FlagsAndAttributes, SECURITY_ANONYMOUS);
+		LofeCheckFlag(FlagsAndAttributes, SECURITY_IDENTIFICATION);
+		LofeCheckFlag(FlagsAndAttributes, SECURITY_IMPERSONATION);
+		LofeCheckFlag(FlagsAndAttributes, SECURITY_DELEGATION);
+		LofeCheckFlag(FlagsAndAttributes, SECURITY_CONTEXT_TRACKING);
+		LofeCheckFlag(FlagsAndAttributes, SECURITY_EFFECTIVE_ONLY);
+		LofeCheckFlag(FlagsAndAttributes, SECURITY_SQOS_PRESENT);
 	}
-	DbgPrint(L"\tFlagsAndAttributes = 0x%x\n", FlagsAndAttributes);
-
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_ARCHIVE);
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_ENCRYPTED);
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_HIDDEN);
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_NORMAL);
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_NOT_CONTENT_INDEXED);
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_OFFLINE);
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_READONLY);
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_SYSTEM);
-	LofeCheckFlag(FlagsAndAttributes, FILE_ATTRIBUTE_TEMPORARY);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_WRITE_THROUGH);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OVERLAPPED);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_NO_BUFFERING);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_RANDOM_ACCESS);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_SEQUENTIAL_SCAN);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_DELETE_ON_CLOSE);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_BACKUP_SEMANTICS);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_POSIX_SEMANTICS);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OPEN_REPARSE_POINT);
-	LofeCheckFlag(FlagsAndAttributes, FILE_FLAG_OPEN_NO_RECALL);
-	LofeCheckFlag(FlagsAndAttributes, SECURITY_ANONYMOUS);
-	LofeCheckFlag(FlagsAndAttributes, SECURITY_IDENTIFICATION);
-	LofeCheckFlag(FlagsAndAttributes, SECURITY_IMPERSONATION);
-	LofeCheckFlag(FlagsAndAttributes, SECURITY_DELEGATION);
-	LofeCheckFlag(FlagsAndAttributes, SECURITY_CONTEXT_TRACKING);
-	LofeCheckFlag(FlagsAndAttributes, SECURITY_EFFECTIVE_ONLY);
-	LofeCheckFlag(FlagsAndAttributes, SECURITY_SQOS_PRESENT);
-
 	handle = CreateFile(
 		filePath,
-		AccessMode,//GENERIC_READ|GENERIC_WRITE|GENERIC_EXECUTE,
+		AccessMode,
 		ShareMode,
 		NULL, // security attribute
 		CreationDisposition,
@@ -363,6 +457,20 @@ LofeCreateFile(
 	}
 
 	DbgPrint(L"\n");
+
+	if (writeHeader) {
+		if (lofe_write_new_header(handle, 0)) {
+			DbgPrint(L"ERROR: failed to write new header\n");
+			return -1;
+		}
+	} else if(aFile) {//sanity check: file should have at least a header
+		lofe_header_t header;
+		if (lofe_read_header(handle, &header)) {
+			DbgPrint(L"ERROR: failed to read header\n");
+			PrintError();
+			return -1;
+		}
+	}
 
 	// save the file handle in Context
 	DokanFileInfo->Context = (ULONG64)handle;
@@ -446,8 +554,8 @@ LofeWriteFile(
 		DbgPrint(L"\tinvalid handle, cleanuped?\n");
 		handle = CreateFile(
 			filePath,
-			GENERIC_WRITE,
-			FILE_SHARE_WRITE,
+			GENERIC_WRITE|GENERIC_READ,
+			FILE_SHARE_WRITE | FILE_SHARE_READ,
 			NULL,
 			OPEN_EXISTING,
 			0,
@@ -458,33 +566,22 @@ LofeWriteFile(
 		}
 		opened = TRUE;
 	}
-
-    LARGE_INTEGER distanceToMove;
-    distanceToMove.QuadPart = Offset;
-
 	if (DokanFileInfo->WriteToEndOfFile) {
-        LARGE_INTEGER z;
-        z.QuadPart = 0;
-		if (!SetFilePointerEx(handle, z, NULL, FILE_END)) {
-			DbgPrint(L"\tseek error, offset = EOF, error = %d\n", GetLastError());
+		lofe_header_t header;
+		if (lofe_read_header(handle, &header)) {
+			DbgPrint(L"\tlofe_read_header failed error = %u\n",GetLastError());
 			return -1;
 		}
-    }
-    else if (!SetFilePointerEx(handle, distanceToMove, NULL, FILE_BEGIN)) {
-		DbgPrint(L"\tseek error, offset = %d, error = %d\n", offset, GetLastError());
+		Offset = header.content_len;
+	}
+	if (lofe_write(handle, Buffer, NumberOfBytesToWrite, Offset)) {
+		DbgPrint(L"\twrite error = %u, buffer length = %d\n",
+			GetLastError(), NumberOfBytesToWrite);
+		PrintError();
+		*NumberOfBytesWritten = 0;
 		return -1;
 	}
-
-		
-	if (!WriteFile(handle, Buffer, NumberOfBytesToWrite, NumberOfBytesWritten, NULL)) {
-		DbgPrint(L"\twrite error = %u, buffer length = %d, write length = %d\n",
-			GetLastError(), NumberOfBytesToWrite, *NumberOfBytesWritten);
-		return -1;
-
-	} else {
-		DbgPrint(L"\twrite %d, offset %d\n\n", *NumberOfBytesWritten, offset);
-	}
-
+	*NumberOfBytesWritten = NumberOfBytesToWrite;
 	// close the file when it is reopened
 	if (opened)
 		CloseHandle(handle);
@@ -513,7 +610,7 @@ LofeGetFileInformation(
 
 		// If CreateDirectory returned FILE_ALREADY_EXISTS and 
 		// it is called with FILE_OPEN_IF, that handle must be opened.
-		handle = CreateFile(filePath, 0, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+		handle = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
 			FILE_FLAG_BACKUP_SEMANTICS, NULL);
 		if (handle == INVALID_HANDLE_VALUE)
 			return -1;
@@ -544,12 +641,20 @@ LofeGetFileInformation(
 			HandleFileInformation->nFileSizeHigh = find.nFileSizeHigh;
 			HandleFileInformation->nFileSizeLow = find.nFileSizeLow;
 			FindClose(handle);
-			fixFileSize2(filePath,HandleFileInformation);
+			if (fixFileSize2(filePath, HandleFileInformation)) {
+				DbgPrint(L"\tfixFileSize2 failed. error code = %d\n\n", GetLastError());
+				PrintError();
+				return -1;
+			}
 			DbgPrint(L"\tFindFiles OK, file size = %d\n", find.nFileSizeLow);
 		}
 	} else {
 		DbgPrint(L"\tHandleFileInformation->dwFileAttributes = 0x%08X\n", HandleFileInformation->dwFileAttributes);
-		fixFileSize2(filePath, HandleFileInformation);
+		if (fixFileSize3(handle, HandleFileInformation)) {
+			DbgPrint(L"\tfixFileSize3 failed. error code = %d, opened=%d\n\n", GetLastError(),opened);
+			PrintError();
+			return -1;
+		}
 		DbgPrint(L"\tGetFileInformationByHandle success, file size = %d\n",
 			HandleFileInformation->nFileSizeLow);
 	}
@@ -808,11 +913,12 @@ LofeDeleteDirectory(
 	HANDLE	hFind;
 	WIN32_FIND_DATAW	findData;
 	size_t	fileLen;
+	int lastError;
 
 	ZeroMemory(filePath, sizeof(filePath));
 	GetFilePath(filePath, MAX_PATH, FileName);
 
-	DbgPrint(L"DeleteDirectory %s\n", filePath);
+	DbgPrint(L"LofeDeleteDirectory %s\n", filePath);
 
 	fileLen = wcslen(filePath);
 	if (filePath[fileLen-1] != L'\\') {
@@ -821,23 +927,35 @@ LofeDeleteDirectory(
 	filePath[fileLen] = L'*';
 
 	hFind = FindFirstFile(filePath, &findData);
-	while (hFind != INVALID_HANDLE_VALUE) {
-		if (wcscmp(findData.cFileName, L"..") != 0 &&
-			wcscmp(findData.cFileName, L".") != 0) {
-			FindClose(hFind);
-			DbgPrint(L"  Directory is not empty: %s\n", findData.cFileName);
-			return -(int)ERROR_DIR_NOT_EMPTY;
+	if (hFind != INVALID_HANDLE_VALUE) {
+		while (hFind != INVALID_HANDLE_VALUE) {
+			if (wcscmp(findData.cFileName, L"..") != 0 &&
+				wcscmp(findData.cFileName, L".") != 0) {
+				FindClose(hFind);
+				DbgPrint(L"  Directory is not empty: %s\n", findData.cFileName);
+				return -(int)ERROR_DIR_NOT_EMPTY;
+			}
+			if (!FindNextFile(hFind, &findData)) {
+				break;
+			}
 		}
-		if (!FindNextFile(hFind, &findData)) {
-			break;
+		FindClose(hFind);
+		lastError = GetLastError();
+		if (lastError == ERROR_NO_MORE_FILES) {
+			return 0;
+		}
+		else {
+			DbgPrint(L"lastError: %d\n", lastError);
+			PrintError();
+			return -1;
 		}
 	}
-	FindClose(hFind);
-
-	if (GetLastError() == ERROR_NO_MORE_FILES) {
+	else {
 		return 0;
-	} else {
-		return -1;
+		/*ZeroMemory(filePath, sizeof(filePath));
+		GetFilePath(filePath, MAX_PATH, FileName);
+		if (isDirectory(filePath)) return 0;
+		else return -1;*/
 	}
 }
 
@@ -923,7 +1041,7 @@ LofeSetEndOfFile(
 	WCHAR			filePath[MAX_PATH];
 	HANDLE			handle;
 	LARGE_INTEGER	offset;
-
+	LONGLONG		ActualByteOffset;
 	GetFilePath(filePath, MAX_PATH, FileName);
 
 	DbgPrint(L"SetEndOfFile %s, %I64d\n", filePath, ByteOffset);
@@ -934,10 +1052,19 @@ LofeSetEndOfFile(
 		return -1;
 	}
 
-	offset.QuadPart = ByteOffset;
+	if (lofe_update_header_len(handle, ByteOffset)) {//write the requested size in the header
+		DWORD error = GetLastError();
+		DbgPrint(L"\terror code = %d\n\n", error);
+		return error * -1;
+	}
+
+	ActualByteOffset = ByteOffset + sizeof(lofe_header_t);//keep the header, truncate only the content to the requested size.
+	ActualByteOffset = align_end(ActualByteOffset);//keep actual file size a multiple of the block size;
+
+	offset.QuadPart = ActualByteOffset;
 	if (!SetFilePointerEx(handle, offset, NULL, FILE_BEGIN)) {
 		DbgPrint(L"\tSetFilePointer error: %d, offset = %I64d\n\n",
-				GetLastError(), ByteOffset);
+				GetLastError(), ActualByteOffset);
 		return GetLastError() * -1;
 	}
 
@@ -947,6 +1074,7 @@ LofeSetEndOfFile(
 		return error * -1;
 	}
 
+	
 	return 0;
 }
 
@@ -1422,13 +1550,16 @@ dokan_wmain(ULONG argc, PWCHAR argv[])
 
 int lofe_start_vfs(PWCHAR encrypted_files_path, PWCHAR mount_point) {
 	PWCHAR fuse_argv[100];
-	int argc = 2;
-	PWCHAR argv[2];
-	int fuse_argc = argc + 4;
+	int argc=0;
+	PWCHAR argv[4];
+	int fuse_argc;
 	int i;
 	int res;
-	argv[0] = L"lofe";
-	argv[1] = L"/d";
+	argv[argc++] = L"lofe";
+	//argv[argc++] = L"/t 1";
+	argv[argc++] = L"/d";
+	//argv[argc++] = L"/s";
+	fuse_argc = argc + 4;
 
 	//dokan command line arguments:    
 	for (i = 0; i<argc; i++) fuse_argv[i] = argv[i];

@@ -206,10 +206,12 @@ int lofe_write(lofe_file_handle_t h, const int8_t * const _buf, size_t size, off
 		//off_t read_size = BLOCK_SIZE - last_block_unaligned_size;
 		int8_t aligned_buf[BLOCK_SIZE];
 
-		//read end of the block from file
-		res = lofe_read_block(h, aligned_buf, write_offset, &header);
-		if (res < 0) { //0 is OK here, it just means end of file, so we are doing a write that will grow the file.
-			return -1;
+		if (header.content_len >= write_offset + BLOCK_SIZE) {//if some content exists
+			//read end of the block from file
+			res = lofe_read_block(h, aligned_buf, write_offset, &header);
+			if (res < 0) { //0 is OK here, it just means end of file, so we are doing a write that will grow the file.
+				return -1;
+			}
 		}
 		//copy the unaligned data to aligned_buf to form a full block
 		memcpy(aligned_buf, buf, last_block_unaligned_size);

@@ -102,3 +102,5 @@ windows/vs_express2015/Win32/Debug/lofe.tlog/*
 windows/vs_express2015/Win32/Debug/lofe.ilk
 windows/vs_express2015/Win32/Debug/lofe.log
 windows/vs_express2015/Win32/Debug/lofe.pdb
+*.class
+windows/vs_express2015/Win32/Debug/lofe.vcxprojResolveAssemblyReference.cache
