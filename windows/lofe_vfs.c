@@ -159,7 +159,7 @@ int lofe_read_block(lofe_file_handle_t h, int8_t*buf, off_t offset, const lofe_h
 		DbgPrint(L"\tseek error, offset = %d, error = %d\n", offset, GetLastError());
 		return -1;
 	}
-	if (!ReadFile(h, buf, BLOCK_SIZE, &ReadLength, NULL)) {
+	if (!ReadFile(h, enc_buf, BLOCK_SIZE, &ReadLength, NULL)) {
 		DbgPrint(L"\tlofe_read_block error = %u, buffer length = %d, read length = %d\n\n",
 			GetLastError(), BLOCK_SIZE, ReadLength);
 		return -1;

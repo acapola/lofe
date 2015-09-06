@@ -174,14 +174,10 @@ void lofe_load_key(int8_t *key,int8_t *key_tweak){
 void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset){
 	__m128i _src = _mm_loadu_si128((__m128i *) src);
 	__m128i _iv = _mm_loadu_si128((__m128i *) iv);
-	//uint64_t offset2[2] __attribute__((aligned(16))) = { 0, offset };
-    //__m128i _offset2 = _mm_load_si128((__m128i *) offset2);
 	__m128i _offset2;
 	//_offset2.m128i_u64[1] = 0;
 	//_offset2.m128i_u64[0] = offset;
-    //m128iSetH(_offset2,0);
-    //m128iSetL(_offset2,offset);
-	m128iH(_offset2) = 0;
+    m128iH(_offset2) = 0;
 	m128iL(_offset2) = offset;
 
 	_offset2 = _mm_aesenc_si128(_offset2, _key_tweak);
@@ -189,17 +185,32 @@ void lofe_encrypt_block(int8_t *dst,int8_t *src, uint64_t iv[2], uint64_t offset
 	_src = _mm_xor_si128(_src,_offset2);
     aes_enc128((int8_t *)&_src,dst);
 }
-void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset){
-	//uint64_t offset2[2] __attribute__((aligned(16))) = { 0, offset };
-	//__m128i _offset2 = _mm_load_si128((__m128i *) offset2);
-	__m128i _offset2;
-	//_offset2.m128i_u64[1] = 0;
-	//_offset2.m128i_u64[0] = offset;
-    //m128iSetH(_offset2,0);
-    //m128iSetL(_offset2,offset);
-	m128iH(_offset2) = 0;
-	m128iL(_offset2) = offset;
 
+#define DEBUG_CRYPTO 0
+#if DEBUG_CRYPTO
+#include <stdio.h>
+void printBytes(char*before,void *pv,int len,char*after) {
+	uint8_t*bytes = (int8_t*)pv;
+	int i;
+	printf("%s", before);
+	for (i = 0; i < len; i++) printf("%02X ", bytes[i]);
+	printf("%s", after);
+}
+void print64(char*before, void *pv, char*after) {printBytes(before,pv, 8,after);}
+void print128(char*before, void *pv, char*after) { printBytes(before,pv, 16,after); }
+#endif
+void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset){
+	__m128i _offset2;
+	//_offset2.m128i_u64[1] = 0;//does not work with GCC
+	//_offset2.m128i_u64[0] = offset;
+    m128iH(_offset2) = 0;
+	m128iL(_offset2) = offset;
+#if DEBUG_CRYPTO
+	printf("lofe_decrypt_block:\n");
+	print64 ("offset = ", &offset, "\n");
+	print128("iv     = ", iv, "\n");
+	print128("src    = ", src, "\n");
+#endif
     __m128i _iv = _mm_loadu_si128((__m128i *) iv);
 	__m128i _dst;
 	aes_dec128(src,(int8_t *)&_dst);
@@ -207,4 +218,7 @@ void lofe_decrypt_block(int8_t *dst,int8_t *src,uint64_t iv[2], uint64_t offset)
 	_offset2 = _mm_aesenc_si128(_offset2, _iv);
 	_dst = _mm_xor_si128(_dst,_offset2);
 	_mm_storeu_si128((__m128i *) dst, _dst);
+#if DEBUG_CRYPTO
+	print128("dst    = ", dst, "\n");
+#endif
 }
