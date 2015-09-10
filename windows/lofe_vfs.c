@@ -75,9 +75,10 @@ GetFilePath(
 	ULONG	numberOfElements,
 	LPCWSTR FileName)
 {
-	RtlZeroMemory(filePath, numberOfElements * sizeof(WCHAR));
+	filePath[0] = 0;
 	wcsncpy_s(filePath, numberOfElements, RootDirectory, wcslen(RootDirectory));
 	wcsncat_s(filePath, numberOfElements, FileName, wcslen(FileName));
+	RtlZeroMemory(filePath+ wcslen(filePath), (numberOfElements-wcslen(filePath)) * sizeof(WCHAR));
 }
 
 int lofe_write_header(lofe_file_handle_t h, lofe_header_t header) {
@@ -925,37 +926,30 @@ LofeDeleteDirectory(
 		filePath[fileLen++] = L'\\';
 	}
 	filePath[fileLen] = L'*';
+	//filePath[fileLen+1] = 0;
 
 	hFind = FindFirstFile(filePath, &findData);
-	if (hFind != INVALID_HANDLE_VALUE) {
-		while (hFind != INVALID_HANDLE_VALUE) {
-			if (wcscmp(findData.cFileName, L"..") != 0 &&
-				wcscmp(findData.cFileName, L".") != 0) {
-				FindClose(hFind);
-				DbgPrint(L"  Directory is not empty: %s\n", findData.cFileName);
-				return -(int)ERROR_DIR_NOT_EMPTY;
-			}
-			if (!FindNextFile(hFind, &findData)) {
-				break;
-			}
+	if (hFind == INVALID_HANDLE_VALUE) return 0;
+	while (hFind != INVALID_HANDLE_VALUE) {
+		if (wcscmp(findData.cFileName, L"..") != 0 &&
+			wcscmp(findData.cFileName, L".") != 0) {
+			FindClose(hFind);
+			DbgPrint(L"  Directory is not empty: %s\n", findData.cFileName);
+			return -(int)ERROR_DIR_NOT_EMPTY;
 		}
-		FindClose(hFind);
-		lastError = GetLastError();
-		if (lastError == ERROR_NO_MORE_FILES) {
-			return 0;
-		}
-		else {
-			DbgPrint(L"lastError: %d\n", lastError);
-			PrintError();
-			return -1;
+		if (!FindNextFile(hFind, &findData)) {
+			break;
 		}
 	}
-	else {
+	FindClose(hFind);
+	lastError = GetLastError();
+	if (lastError == ERROR_NO_MORE_FILES) {
 		return 0;
-		/*ZeroMemory(filePath, sizeof(filePath));
-		GetFilePath(filePath, MAX_PATH, FileName);
-		if (isDirectory(filePath)) return 0;
-		else return -1;*/
+	}
+	else {
+		DbgPrint(L"lastError: %d\n", lastError);
+		PrintError();
+		return -1;
 	}
 }
 
