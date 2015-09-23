@@ -1,5 +1,8 @@
 package uk.co.nimp.lofe;
 
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.*;
 import static java.nio.file.StandardWatchEventKinds.*;
 import static java.nio.file.LinkOption.*;
@@ -80,7 +83,7 @@ public class WatchDir implements Runnable {
      */
     void processEvents() {
         while(true) {
-
+            System.out.println("wait for events");
             // wait for key to be signalled
             WatchKey key;
             try {
@@ -94,8 +97,10 @@ public class WatchDir implements Runnable {
                 System.err.println("WatchKey not recognized!!");
                 continue;
             }
-
-            for (WatchEvent<?> event: key.pollEvents()) {
+            List<PathWatchEvent> eventList = new ArrayList<PathWatchEvent>();
+            List<WatchEvent<?>> keyEvents = key.pollEvents();
+            System.out.println("key has "+keyEvents.size()+" events");
+            for (WatchEvent<?> event: keyEvents) {
                 WatchEvent.Kind kind = event.kind();
 
                 // TBD - provide example of how OVERFLOW event is handled
@@ -109,10 +114,22 @@ public class WatchDir implements Runnable {
                 Path name = ev.context();
                 Path child = dir.resolve(name);
 
-                // print out event
-                //System.out.format("%s: %s\n", event.kind().name(), child);
-                //System.out.format("\t%s\n", root.relativize(child));
-                processor.processEvent(new PathWatchEvent(root,ev,root.relativize(child)));
+                boolean partialModify = false;
+                if (kind == ENTRY_MODIFY) {//find out if the file modification is completed or not
+                    if(child.toFile().isFile()) {
+                        partialModify = isFileLocked(child.toString());
+                    }
+                }
+
+                if(partialModify){
+                    System.out.format("ENTRY_PARTIAL_MODIFY: %s (file size = %d)\n", child,child.toFile().length());
+                }else {
+                    // print out event
+                    //System.out.format("%s: %s\n", event.kind().name(), child);
+                    //System.out.format("\t%s\n", root.relativize(child));
+                    //processor.processEvent(new PathWatchEvent(root,ev,root.relativize(child)));
+                    eventList.add(new PathWatchEvent(root, ev, root.relativize(child)));
+                }
 
                 // if directory is created, then
                 // register it and its sub-directories
@@ -126,7 +143,7 @@ public class WatchDir implements Runnable {
                     }
                 }
             }
-
+            processor.processEvents(eventList);
             // reset key and remove from set if directory no longer accessible
             boolean valid = key.reset();
             if (!valid) {
@@ -163,5 +180,71 @@ public class WatchDir implements Runnable {
         System.out.println("monitor thread started");
     }
 
+    public static boolean isFileLocked(String fileName) {
+        boolean locked = false;
+        File file = new File(fileName);
+        RandomAccessFile ra=null;
+        FileChannel channel=null;
+        try {
+            // Get a file channel for the file
+            ra= new RandomAccessFile(file, "rw");
+            channel = ra.getChannel();
+
+            /*// Use the file channel to create a lock on the file.
+            // This method blocks until it can retrieve the lock.
+            FileLock lock = channel.lock();*/
+            FileLock lock=null;
+            // Try acquiring the lock without blocking. This method returns
+            // null or throws an exception if the file is already locked.
+            try {
+                lock = channel.tryLock();
+                if(null==lock) locked = true;
+                else {
+                    System.out.println("file size = "+file.length());
+                    lock.release();
+                }
+            } catch (Throwable e) {
+                locked = true;
+            }
+        } catch (Throwable e) {
+            //must not do anything particular about FileNotFoundException !
+            //we can get this: java.io.FileNotFoundException: <filename> (The process cannot access the file because it is being used by another process)
+            locked = true;
+        } finally{
+            if(channel!=null) try {
+                channel.close();// Close the file
+                ra=null;
+            }catch(Throwable e){ }
+            if(ra!=null) try {
+                ra.close();// Close the file
+            }catch(Throwable e){ }
+        }
+        return locked;
+    }
+
+
+    public static boolean isFileLocked1(String filename) {
+        boolean isLocked=false;
+        RandomAccessFile fos=null;
+        try {
+            File file = new File(filename);
+            if(file.exists()) {
+                fos=new RandomAccessFile(file,"rw");
+            }
+        } catch (FileNotFoundException e) {
+            isLocked=true;
+        }catch (Exception e) {
+            // handle exception
+        }finally {
+            try {
+                if(fos!=null) {
+                    fos.close();
+                }
+            }catch(Exception e) {
+                //handle exception
+            }
+        }
+        return isLocked;
+    }
 
 }

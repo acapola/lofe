@@ -31,8 +31,11 @@ public class FileSystemTest {
         String baseDir;
         if(OsUtils.isWindows()) baseDir = "t:\\";
         else baseDir = "/home/seb/tmp/myfs";
+
+        baseDir="C:\\tmp\\public";
+
         base=new File(baseDir,"FileSystemTest");
-        /*boolean deleted = false;
+        boolean deleted = false;
         if(base.exists()) {
             try {
                 deleted = deleteDirectory(base);
@@ -43,7 +46,7 @@ public class FileSystemTest {
         }
 
         assert(!base.exists());
-        base.mkdir();*/
+        base.mkdir();
     }
 
     /*static {
@@ -89,6 +92,17 @@ public class FileSystemTest {
         }
     }
 
+    static void writeToFileByteByByte(byte[] data,File path) throws IOException {
+        FileOutputStream stream = new FileOutputStream(path);
+        try {
+            for(byte b:data) {
+                stream.write(b);
+            }
+        } finally {
+            stream.close();
+        }
+    }
+
     static void writeToFile(byte[] data,int offset,int len,File path, long fileOffset) throws IOException {
         RandomAccessFile ra = new RandomAccessFile(path, "rw");
         try {
@@ -122,7 +136,7 @@ public class FileSystemTest {
         for(int i=0;i<data.length;i++) data[i]=(byte)i;
         File f = new File(base,"testBinaryAligned");
         assert(!f.exists());
-        writeToFile(data,f);
+        writeToFileByteByByte(data, f);
         byte[] readData = Files.readAllBytes(f.toPath());
         assertEquals(data,readData);
         long len = f.length();
@@ -203,5 +217,24 @@ public class FileSystemTest {
         byte[] readData = Files.readAllBytes(f.toPath());
         assertEquals(data, readData);
         assert(f.length()==data.length);
+    }
+
+    @Test
+    public void testBigWrite() throws IOException {
+        String name = "testBigWrite";
+        File f = new File(base, name);
+        assert (!f.exists());
+
+        BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
+        try {
+            for(int i=0;i<100*1024*1024;i++) {//create 400MB files
+                if((i%(20*1024*1024))==0){
+                    System.out.println(i);
+                }
+                stream.write(i);
+            }
+        } finally {
+            stream.close();
+        }
     }
 }

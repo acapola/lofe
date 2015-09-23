@@ -3,6 +3,7 @@ package uk.co.nimp.lofe;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -25,15 +26,27 @@ public abstract class WatchEventProcessor implements Runnable {
     PathWatchEvent get(long index){
         if(index<0) throw new RuntimeException();
         long absoluteIndex = firstEventNotConsumed + index;
-        if(absoluteIndex>createdEvents) throw new RuntimeException();
+        if(absoluteIndex>createdEvents) return null;//throw new RuntimeException();
         PathWatchEvent out = events.get(absoluteIndex);
+        return out;
+    }
+
+    PathWatchEvent getNext(long index){
+        if(index<0) throw new RuntimeException();
+        long absoluteIndex = firstEventNotConsumed + index;
+        if (absoluteIndex > createdEvents) return null;//throw new RuntimeException();
+        PathWatchEvent out;
+        do {
+            if (absoluteIndex > createdEvents) return null;
+            out = events.get(absoluteIndex++);
+        }while(null==out);
         return out;
     }
 
     PathWatchEvent consume(long index) {
         if(index<0) throw new RuntimeException();
         long absoluteIndex = firstEventNotConsumed + index;
-        if(absoluteIndex>createdEvents) throw new RuntimeException();
+        if(absoluteIndex>createdEvents) return null;//throw new RuntimeException();
         PathWatchEvent out = events.get(absoluteIndex);
         events.remove(absoluteIndex);
         while (!events.containsKey(firstEventNotConsumed)) {
@@ -49,6 +62,14 @@ public abstract class WatchEventProcessor implements Runnable {
 
     public void processEvent(PathWatchEvent event) {
         events.put(++createdEvents, event);
+        synchronized(syncObj) {
+            syncObj.notify();
+        }
+    }
+    public void processEvents(List<PathWatchEvent> eventList) {
+        //events.addAll(++createdEvents,events);
+        for(PathWatchEvent e:eventList)
+            events.put(++createdEvents, e);
         synchronized(syncObj) {
             syncObj.notify();
         }

@@ -19,7 +19,17 @@ public class DropBoxEncryptedMirror extends WatchEventProcessor{
                 synchronized (syncObj) {
                     syncObj.wait();
                 }
-                System.out.println(consume());
+                /*try {
+                    Thread.sleep(10);                 //10 milliseconds delay to get complete operations
+                } catch(InterruptedException ex) {
+                    ex.printStackTrace();
+                }*/
+                System.out.println(getMaxEventIndex());
+                PathWatchEvent ev=consume();
+                while(null!=ev) {
+                    System.out.println(ev);
+                    ev=consume();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

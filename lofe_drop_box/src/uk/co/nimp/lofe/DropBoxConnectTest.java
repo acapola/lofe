@@ -4,7 +4,7 @@ import com.dropbox.core.*;
 import java.io.*;
 import java.util.Locale;
 
-public class Main {
+public class DropBoxConnectTest {
 
     public static void main(String[] args) throws IOException, DbxException {
         String accessToken = "5RgENv3jMiAAAAAAAAAAHp3MuBHSYHdZo_SMgcj2doJj5NtC035mb_Te3KiY7jbP";
